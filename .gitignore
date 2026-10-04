@@ -1,1 +1,8 @@
 .DS_Store
+
+# retired files (replaced by umap-labelled-map.html and embeddings-to-labelled-maps.ipynb);
+# the old export shows article headlines on hover, so it must never be published
+plots/sba-umap-labelled-1*
+view/sba-umap-labelled-1*
+notebooks/SBA-UMAP.*
+view/SBA-UMAP.*

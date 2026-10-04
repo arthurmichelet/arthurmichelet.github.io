@@ -1,0 +1,17 @@
+Copyright (c) 2026 Arthur Michelet
+
+1. Text, figures, plots, maps and notebook narration (everything shown on the
+   site and in the plots/ and notebooks/ folders): Creative Commons
+   Attribution-NonCommercial 4.0 International (CC BY-NC 4.0),
+   https://creativecommons.org/licenses/by-nc/4.0/
+   Please credit "Arthur Michelet" and link back to this site.
+
+2. Code (build.py, content.py, make_*.py, and the code cells of the notebooks):
+   MIT License. Permission is granted, free of charge, to use, copy, modify,
+   merge, publish, distribute and sublicense this code, provided this notice is
+   kept. The code is provided "as is", without warranty of any kind.
+
+3. Not covered: the short article openings (first 15 words) shown in the plots
+   and notebooks are quotations from newspapers retrieved through Impresso
+   (https://impresso-project.ch). They remain subject to the rights of their
+   publishers and are not licensed here. Do not extract them for reuse.
