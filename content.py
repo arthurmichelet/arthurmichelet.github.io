@@ -8,6 +8,10 @@ NAME = "Arthur Michelet"
 # Look of the site: "retro" (theme-retro.css, on top of style.css) or "classic" (style.css only).
 THEME = "retro"
 
+SITE_URL = "https://arthurmichelet.com"
+SITE_DESCRIPTION = ("Arthur Michelet, PhD candidate in history at the University of Lausanne, "
+                    "researching the media activity of Swiss banks, 1870–2000 (digital humanities).")
+
 # ── info page ────────────────────────────────────────────────────────────────
 # In the paragraph below, [words](https://link) makes a link.
 INFO = (

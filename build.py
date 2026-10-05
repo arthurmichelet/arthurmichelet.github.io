@@ -161,16 +161,34 @@ def bg_preload(root):
         f'\n<link rel="preload" as="image" href="{root}assets/bg-portrait.webp" media="(max-aspect-ratio: 1/1)">'
     )
 
+def person_jsonld():
+    data = {
+        "@context": "https://schema.org",
+        "@type": "Person",
+        "name": content.NAME,
+        "url": content.SITE_URL + "/",
+        "jobTitle": "PhD candidate in history",
+        "affiliation": {"@type": "CollegeOrUniversity", "name": "University of Lausanne"},
+        "sameAs": [
+            f"https://orcid.org/{content.ORCID}",
+            "https://github.com/arthurmichelet",
+            # add your LinkedIn, UNIL profile, Google Scholar, Impresso page URLs here
+        ],
+    }
+    return '<script type="application/ld+json">' + json.dumps(data, ensure_ascii=False) + "</script>"
+
 
 def page(title, body, current=None, root="", body_class="site", main_class=""):
     main_attr = f' class="{main_class}"' if main_class else ""
     is_home = "home" in body_class.split()
     return f"""<!doctype html>
 <html lang="en">
+{person_jsonld() if is_home else ""}
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{html.escape(title)}</title>
+<meta name="description" content="{html.escape(content.SITE_DESCRIPTION)}">
 {FONTS}
 <link rel="stylesheet" href="{root}style.css">
 {theme_link(root)}{bg_preload(root)}
@@ -551,6 +569,17 @@ def connector_svg(dy, gap):
         f'<path d="M0,{y_box} C{gap * .55:.0f},{y_box} {gap * .45:.0f},{y_tip} {gap},{y_tip}"/></svg>'
     )
 
+def clean_urls():
+    """Make links to the site's own pages extension-less: info.html -> info, index.html -> ./"""
+    pat = re.compile(r'href="((?:\.\./)?(?:view/)?)([^"/#?]+)\.html((?:#[^"]*)?)"')
+    def fix(m):
+        base, name, frag = m.groups()
+        if name == "index":
+            return f'href="{base or "./"}{frag}"'
+        return f'href="{base}{name}{frag}"'
+    pages = [ROOT / n for n in ("index.html", "info.html", "publications.html", "explore.html")]
+    for f in pages + sorted(VIEW.glob("*.html")):
+        f.write_text(pat.sub(fix, f.read_text(encoding="utf-8")), encoding="utf-8")
 
 def interests_html(interests):
     """A flat list of strings -> the plain boxed list. A list of (name, [topics]) -> bricks."""
@@ -737,7 +766,6 @@ def build_explore(plots, notebooks):
     write("explore.html", page(f"explore \u00b7 {content.NAME}", body, current="explore",
                                main_class="wide bare" if cards else ""))
 
-
 if __name__ == "__main__":
     notebooks = convert_notebooks()
     plots = list_plots()
@@ -745,4 +773,13 @@ if __name__ == "__main__":
     build_info()
     build_publications()
     build_explore(plots, notebooks)
+
+    write("robots.txt", f"User-agent: *\nAllow: /\nSitemap: {content.SITE_URL}/sitemap.xml\n")
+    pages = ["", "info", "publications", "explore"] + [f"view/{p.stem}" for p in sorted(VIEW.glob("*.html"))]
+    write("sitemap.xml", '<?xml version="1.0" encoding="UTF-8"?>\n'
+          '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+          + "".join(f"<url><loc>{content.SITE_URL}/{p}</loc></url>\n" for p in pages)
+          + "</urlset>\n")
+
+    clean_urls()
     print(f"Built 4 pages: {len(plots)} visualisation(s), {len(notebooks)} notebook(s).")
