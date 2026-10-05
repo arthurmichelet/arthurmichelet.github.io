@@ -2,7 +2,7 @@
    is untouched: set THEME = "classic" in content.py and rebuild to go back.
    Same fonts, lowercase and palette; what changes is the construction:
    hard 2px borders, square corners, offset shadows, tab navigation and
-   a page presented as a bordered panel. C0F3E2 caffff f0ffff*/
+   a page presented as a bordered panel. C0F3E2 caffff f0ffff ECF5F5*/
 
 :root {
   --ink: #333333;
@@ -11,7 +11,7 @@
   --neon: #00FFA6;
   --line: rgba(51, 51, 51, .28);
   --rule: var(--line);
-  --page: #ECF5F5;       /* page background */
+  --page: #f4feff;       /* page background */
   --raised: #fff;        /* lists, pills, hovered tabs */
   --tint2: #BDFFE8;      /* orange card */
   --tint3: #caffff;      /* neon card */
@@ -29,7 +29,7 @@
    frame, as they are drawn for a light background. ──────────────────────────────────────────── */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --text: #d9f7ec;
+    --text: #ebfff8;
     --ink: #C0F3E2;
     --paper: #0a2b24;
     --raised: #06201a;
@@ -57,7 +57,7 @@
   --muted: rgba(217, 247, 236, .65);
   --tag: #33403c;
   --bg-top: #3a4a45; --bg-side: #26332f; --bg-label: #c9d6d1;
-  --tag-text: #c3d3cd;
+  --tag-text: #d7e3de;
   --page: #04171a;
   --tint2: #3a2118;
   --tint3: #0b3b30;

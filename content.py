@@ -16,8 +16,8 @@ INFO = (
     "and apply computational techniques to digitised media sources to study the news coverage "
     "and public relations of the Swiss Bankers Association (1910\u20131990). My PhD is part of the "
     "[Impresso \u2013 Media Monitoring of the Past](https://impresso-project.ch/) project, funded by the "
-    "Swiss National Science Foundation and the Luxembourg Research Fund. I am also a teaching assistant "
-    "at EPFL, Lausanne, as well as a [Visiting Research Fellow](https://www.sas.ac.uk/people/arthur-michelet) "
+    "Swiss National Science Foundation and the Luxembourg Research Fund. I also teach "
+    "at EPFL, Lausanne, and am a [Visiting Research Fellow](https://www.sas.ac.uk/people/arthur-michelet) "
     "at the Digital Humanities Research Hub (School of Advanced Study), in London UK."
 )
 
@@ -64,7 +64,7 @@ INTERESTS = [
     ("digital humanities", [
         "computational text analysis",
         "text embeddings",
-        "language models and artificial intelligence for historical sources",
+        "language models for historical sources",
         "data visualisation",
         "NLP and machine learning",
     ]),

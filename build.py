@@ -477,6 +477,11 @@ def build_home():
 # Grey until hovered; then slab, box and line take the brick's colour (top face = box colour).
 BRICK_COLOURS = [   # (top face, side band) -- the site palette; the box takes the top colour
     ("#FF8A66", "#E5532B"),
+    ("#40CED3", "#2D9094"),
+    ("#005778", "#003C53"),
+]
+BRICK_COLOURS_ORIGINAL = [   # (top face, side band) -- the site palette; the box takes the top colour
+    ("#FF8A66", "#E5532B"),
     ("#5DCAA5", "#1D9E75"),
     ("#1D9E75", "#0B6A50"),
 ]
