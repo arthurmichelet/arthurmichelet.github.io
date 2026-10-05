@@ -369,6 +369,11 @@ span.pill { background: var(--tag); color: var(--tag-text); }
 }
 /* (to bring the big window back, delete the rule above) */
 
+/* info page: the bio paragraph is set a little larger than body text (phones keep the normal size) */
+@media (min-width: 701px) {
+  .site main[data-page="info"] > p:first-of-type { font-size: 19.8px; line-height: 1.78; }
+}
+
 .site ul.items,
 dl.contact {
   transition: transform 120ms ease-in-out, box-shadow 120ms ease-in-out;
@@ -432,7 +437,7 @@ dl.contact {
 .brick-left .brick-side { left: 0; }
 .brick-right .brick-side { right: 0; }
 .brick-line { position: absolute; overflow: visible; pointer-events: none; }
-.brick-line path { fill: none; stroke: var(--cur-line); stroke-width: 2; }
+.brick-line path { fill: none; stroke: var(--cur-line); stroke-width: 2; transition: stroke-width 120ms ease-in-out; }
 .brick-left .brick-line { left: 100%; }
 .brick-right .brick-line { right: 100%; transform: scaleX(-1); }
 
@@ -451,11 +456,11 @@ dl.contact {
   border: 2px solid var(--ink);
   border-radius: 2px;
 }
-@media (hover: hover) {
+@media (hover: hover) {                         /* the slab stays put; the box lifts with its offset shadow */
   .brick:has(.shape:hover, .brick-box:hover) .brick-box { transform: translate(6px, -6px); box-shadow: -6px 6px 0 var(--ink); }
-  .brick:has(.shape:hover, .brick-box:hover) .brick-slab { transform: translateY(-8px); }
 }
-@media (prefers-reduced-motion: reduce) { .brick-slab, .brick-box, .brick-slab .shape { transition: none; } }
+.brick:has(.shape:hover, .brick-box:hover) .brick-line path { stroke-width: 4; }   /* the thread thickens */
+@media (prefers-reduced-motion: reduce) { .brick-slab, .brick-box, .brick-slab .shape, .brick-line path { transition: none; } }
 
 @media (max-width: 860px) {                     /* narrow screens: slab, then its box, one under the other */
   .bricks { padding: 0; }
