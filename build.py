@@ -172,9 +172,11 @@ def person_jsonld():
         "sameAs": [
             f"https://orcid.org/{content.ORCID}",
             "https://github.com/arthurmichelet",
-            # add your LinkedIn, UNIL profile, Google Scholar, Impresso page URLs here
+            # add your UNIL profile, Google Scholar, Impresso page URLs here
         ],
     }
+    if getattr(content, "LINKEDIN", None):
+        data["sameAs"].append(content.LINKEDIN)
     return '<script type="application/ld+json">' + json.dumps(data, ensure_ascii=False) + "</script>"
 
 
@@ -367,7 +369,7 @@ def write_viewer(stem, title, src, info, open_label):
         "fit();addEventListener('resize',fit);if(window.ResizeObserver)new ResizeObserver(fit).observe(f);});})();</script>"
     )
     out = VIEW / f"{slug(stem)}.html"
-    out.write_text(page(title, body, current="explore", root="../", main_class="wide viewer-page"), encoding="utf-8")
+    out.write_text(page(f"{title} \u00b7 {content.NAME}", body, current="explore", root="../", main_class="wide viewer-page"), encoding="utf-8")
     return f"view/{out.name}"
 
 
