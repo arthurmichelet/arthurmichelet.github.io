@@ -132,7 +132,9 @@ def header(root="", current=None, wide=False, home=False):
         nav = f'<nav>{"".join(links)}</nav>'
     wide_cls = " wide" if wide else ""
     if getattr(content, "THEME", "classic") != "classic":
-        nav = f'<div class="nav-row">{nav}{THEME_TOGGLE}</div>'   # menu on the left, light/dark switch on the right
+        # menu on the left, light/dark switch on the right. data-nosnippet: Google must not use these
+        # button labels ("start", "dark", "light") as the text under the site name in its results.
+        nav = f'<div class="nav-row" data-nosnippet>{nav}{THEME_TOGGLE}</div>'
     return (
         f'<header class="site-header{wide_cls}">'
         f'<a class="site-name" href="{root}index.html">{html.escape(content.NAME)}</a>'
