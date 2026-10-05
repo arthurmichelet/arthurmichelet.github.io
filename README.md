@@ -55,7 +55,7 @@ Everything in the repo is public. Interactive Plotly figures embed whatever you 
 
 ## Page transitions
 
-Pages cross-fade and the name glides between its home position and the top (CSS view transitions, in `style.css`). This works in Chrome, Edge and Safari once the site is online (or served over `http://`); it does not animate when you open the files straight from disk, and Firefox switches pages instantly. It is switched off automatically for people who prefer reduced motion.
+Pages cross-fade and the name glides between its home position and the top (CSS view transitions, in `style.css`). This works in Chrome, Edge and Safari once the site is online (or served over `http://`); it does not animate when you open the files straight from disk. Firefox is excluded on purpose (the transition delayed scrolling there), so it switches pages instantly. It is switched off automatically for people who prefer reduced motion.
 
 ## Explore cards (retro look)
 

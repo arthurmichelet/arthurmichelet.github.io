@@ -211,6 +211,16 @@ a.orcid { display: inline-flex; align-items: center; gap: 8px; }
   @view-transition { navigation: none; }
 }
 
+/* Firefox: the page transition holds up scrolling for about half a second after each page change,
+   so it is switched off there (pages simply switch instantly). */
+@supports (-moz-appearance: none) {
+  @view-transition { navigation: none; }
+}
+
+/* Always reserve the scrollbar's space, so a short page (publications) is exactly as wide as a
+   long one (info, explore) in browsers that show classic scrollbars. */
+html { scrollbar-gutter: stable; }
+
 /* ── "lifted" clickable pills ────────────────────────────────────────────────
    On hover the pill moves up and to the right while a solid dark copy stays
    where it was (the shadow is offset by the opposite amount), so the pill looks
