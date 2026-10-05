@@ -180,6 +180,14 @@ def person_jsonld():
     return '<script type="application/ld+json">' + json.dumps(data, ensure_ascii=False) + "</script>"
 
 
+# Tab icon (favicon.ico also serves browsers and Google, which look for it at the site root).
+# Root-absolute paths, so they work from every folder (view/, notebooks/).
+FAVICON = (
+    '<link rel="icon" href="/favicon.ico" sizes="48x48">'
+    '<link rel="icon" type="image/png" href="/favicon.png" sizes="192x192">'
+    '<link rel="apple-touch-icon" href="/apple-touch-icon.png">'
+)
+
 def page(title, body, current=None, root="", body_class="site", main_class=""):
     main_attr = f' class="{main_class}"' if main_class else ""
     is_home = "home" in body_class.split()
@@ -191,7 +199,7 @@ def page(title, body, current=None, root="", body_class="site", main_class=""):
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{html.escape(title)}</title>
 <meta name="description" content="{html.escape(content.SITE_DESCRIPTION)}">
-{FONTS}
+{FONTS}{FAVICON}
 <link rel="stylesheet" href="{root}style.css">
 {theme_link(root)}{bg_preload(root)}
 </head>
@@ -378,9 +386,9 @@ def convert_notebooks():
     cards = cards_mode()
     exporter = HTMLExporter(template_name="lab")
     if cards:   # shown inside a viewer page: no site header, just the notebook
-        head_extra = FONTS + NOTEBOOK_CSS
+        head_extra = FONTS + FAVICON + NOTEBOOK_CSS
     else:
-        head_extra = FONTS + '<link rel="stylesheet" href="../style.css">' + NOTEBOOK_CSS
+        head_extra = FONTS + FAVICON + '<link rel="stylesheet" href="../style.css">' + NOTEBOOK_CSS
     if cards:   # headings in the theme's monospaced face
         head_extra += ("<style>.jp-RenderedHTMLCommon h1, .jp-RenderedHTMLCommon h2, "
                        ".jp-RenderedHTMLCommon h3 { font-family: 'IBM Plex Mono', ui-monospace, Menlo, monospace; }</style>")
