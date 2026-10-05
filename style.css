@@ -69,7 +69,6 @@ body.site::before {
   background:
     url("assets/grain.webp") 0 0 / 256px 256px repeat,
     #C0F3E2 url("assets/bg.webp") center / cover no-repeat;
-  view-transition-name: page-bg;   /* stays put while pages change: no flash */
 }
 @media (max-aspect-ratio: 1/1) {
   /* phones: the text spans the whole width, so soften the texture slightly */
@@ -192,8 +191,13 @@ a.orcid { display: inline-flex; align-items: center; gap: 8px; }
    Safari; other browsers simply switch pages instantly. */
 @view-transition { navigation: auto; }
 
-.site-name { view-transition-name: site-name; }
-.site-header nav { view-transition-name: site-nav; }
+/* Names for the elements that glide between pages. Not given in Firefox: it does not play the
+   transition, and naming elements there seems to slow down the first paint and scrolling. */
+@supports not (-moz-appearance: none) {
+  body.site::before { view-transition-name: page-bg; }   /* stays put while pages change: no flash */
+  .site-name { view-transition-name: site-name; }
+  .site-header nav { view-transition-name: site-nav; }
+}
 
 ::view-transition-group(page-bg) { animation: none; }
 ::view-transition-old(page-bg) { display: none; }
@@ -217,9 +221,9 @@ a.orcid { display: inline-flex; align-items: center; gap: 8px; }
   @view-transition { navigation: none; }
 }
 
-/* Always reserve the scrollbar's space, so a short page (publications) is exactly as wide as a
-   long one (info, explore) in browsers that show classic scrollbars. */
-html { scrollbar-gutter: stable; }
+/* The vertical scrollbar is always there from the first frame, so a short page (publications) is
+   exactly as wide as a long one (info, explore), and the scrollbar never appears late. */
+html { overflow-y: scroll; }
 
 /* ── "lifted" clickable pills ────────────────────────────────────────────────
    On hover the pill moves up and to the right while a solid dark copy stays
