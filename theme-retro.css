@@ -457,7 +457,10 @@ dl.contact {
   border-radius: 2px;
 }
 @media (hover: hover) {                         /* the slab stays put; the box lifts with its offset shadow */
-  .brick:has(.shape:hover, .brick-box:hover) .brick-box { transform: translate(6px, -6px); box-shadow: -6px 6px 0 var(--ink); }
+  /* the box lifts 6px up-right; its shadow sits 6px down-left of the RESTING position (12px from the lifted box) */
+  .brick:has(.shape:hover, .brick-box:hover) .brick-box { transform: translate(6px, -6px); box-shadow: -12px 12px 0 var(--ink); }
+  /* boxes on the right mirror it: they lift up and toward the slab, the shadow pops out the other way */
+  .brick-right:has(.shape:hover, .brick-box:hover) .brick-box { transform: translate(-6px, -6px); box-shadow: 12px 12px 0 var(--ink); }
 }
 .brick:has(.shape:hover, .brick-box:hover) .brick-line path { stroke-width: 4; }   /* the thread thickens */
 @media (prefers-reduced-motion: reduce) { .brick-slab, .brick-box, .brick-slab .shape, .brick-line path { transition: none; } }
