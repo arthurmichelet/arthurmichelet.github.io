@@ -152,10 +152,13 @@ body.site {
   .nav-row { margin-right: calc(-1 * var(--ext)); }
 }
 @media (max-width: 520px) {
-  .site-header { padding-top: 24px; }
+  .site-header, .site-header.wide { padding-top: 20px; }
   .theme-toggle span > span { display: none; }
-  .nav-row { gap: 6px; padding: 8px; margin-bottom: 32px; }
-  .site-header nav a { padding: 4px 9px; }
+  /* phone: the menu is a full-width bar, evenly spread, with finger-sized targets */
+  .nav-row { align-self: stretch; justify-content: space-between; gap: 0; padding: 4px; margin-bottom: 28px; }
+  .site-header nav { flex: 1; justify-content: space-around; gap: 0; }
+  .site-header nav a { padding: 10px 8px; flex: 1; text-align: center; }
+  .theme-toggle { padding: 10px 14px; }
 }
 
 /* home: the start button */
@@ -306,7 +309,7 @@ span.pill { background: var(--tag); color: var(--tag-text); border-color: transp
 .site a.ref-url { overflow-wrap: anywhere; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
 .site a.ref-url:hover { color: var(--accent); }
 
-/* ── explore: ruled cards, each with an orange code (v.1 visualisations, n.1 notebooks) ───────────────────────── */
+/* ── explore: ruled cards, each with an orange code (v.01 visualisations, n.01 notebooks) ───────────────────────── */
 .cards {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -332,8 +335,8 @@ span.pill { background: var(--tag); color: var(--tag-text); border-color: transp
   color: var(--accent);
   font-size: 11px; font-weight: 500; letter-spacing: .1em;
 }
-.site .card-plot .card-title::before { counter-increment: viz; content: "v." counter(viz); }
-.site .card-notebook .card-title::before { counter-increment: nb; content: "n." counter(nb); }
+.site .card-plot .card-title::before { counter-increment: viz; content: "v." counter(viz, decimal-leading-zero); }
+.site .card-notebook .card-title::before { counter-increment: nb; content: "n." counter(nb, decimal-leading-zero); }
 .site .card-title a:hover { color: var(--accent); }
 .card-icon {
   position: absolute; top: 0; right: 0;
@@ -440,7 +443,8 @@ span.pill { background: var(--tag); color: var(--tag-text); border-color: transp
 }
 .brick-box li {
   padding: 5px 10px;
-  font-size: 14px; line-height: 1.4;
+  font-family: var(--head);
+  font-size: 13.5px; line-height: 1.4;
   background: var(--paper);
   border: 1px solid var(--ink);
   border-radius: 0;
@@ -453,4 +457,22 @@ span.pill { background: var(--tag); color: var(--tag-text); border-color: transp
   .brick-slab { position: relative; left: auto; display: block; width: 280px; height: 161px; margin: 0 auto 6px; }
   .brick-side { position: relative; top: auto; width: auto; transform: none; }
   .brick-line { display: none; }
+}
+
+/* ── phones: slightly smaller text, tighter rhythm ────────────────────────────── */
+@media (max-width: 520px) {
+  body.site { font-size: 16px; line-height: 1.6; }
+  .site-name { font-size: 2.3rem; }
+  .site main { width: calc(100% - 40px); margin-bottom: 64px; }
+  .site-header, .site-header.wide { padding-left: 20px; padding-right: 20px; }
+  .site h2, .site main.bare h2 { margin-top: 40px; font-size: 11px; }
+  .site h2:first-child, .site h1.sr-only + h2, .site main.bare h1.sr-only + h2 { margin-top: 24px; }
+  .site main[data-page="info"] > p:first-of-type { font-size: 16.5px; line-height: 1.6; }
+  .site .ref { font-size: 15.5px; line-height: 1.55; padding-left: 1em; text-indent: -1em; }
+  .site ul.items li { padding: 12px 0; }
+  .site ul.items li .pill, .site ul.items li span.pill { margin-top: 8px; }
+  dl.contact dt { padding-top: 12px; }
+  dl.contact dd { padding-top: 2px; padding-bottom: 12px; }
+  .viewer { gap: 24px; }
+  .site-header:has(.start) .theme-toggle { top: 14px; right: 6px; }
 }
