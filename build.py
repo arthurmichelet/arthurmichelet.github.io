@@ -153,9 +153,9 @@ def header(root="", current=None, wide=False, home=False):
         # button labels ("start", "dark", "light") as the text under the site name in its results.
         mark = ""
         if not home and content.THEME in HOME_BUTTON_THEMES:
-            # the AM monogram: a button back to the start page, next to the light/dark switch
+            # the AM monogram (transparent, assets/monogram.png): a button back to the start page, next to the light/dark switch
             mark = (f'<a class="home-btn" href="{root}index.html" aria-label="start page" title="start page">'
-                    f'<img src="{root}apple-touch-icon.png" alt="" width="30" height="30"></a>')
+                    f'<img src="{root}assets/monogram.png" alt="" width="32" height="32"></a>')
         nav = f'<div class="nav-row" data-nosnippet>{mark}{nav}{THEME_TOGGLE}</div>'
     return (
         f'<header class="site-header{wide_cls}">'

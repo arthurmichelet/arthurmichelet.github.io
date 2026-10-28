@@ -126,12 +126,12 @@ body.site {
 .site-header nav a.current { background: var(--deep); color: #fff; font-weight: 700; }
 .site-header nav a.current:hover { color: var(--neon); }
 
-.home-btn {                          /* the round AM monogram (apple-touch-icon.png): first in the box, links to the start page */
+.home-btn {                          /* the AM monogram (assets/monogram.png, transparent): first in the box, links to the start page */
   order: -2;
   display: inline-flex; align-items: center;
   padding: 0 8px 0 3px;
 }
-.home-btn img { display: block; width: 30px; height: 30px; border-radius: 50%; box-shadow: 0 0 0 1px var(--ink); transition: transform .15s; }   /* the round monogram, with a hairline ring */
+.home-btn img { display: block; width: 32px; height: 32px; transition: transform .15s; }   /* the monogram: no background, no border */
 .home-btn:hover img { transform: scale(1.12); }
 .home-btn:focus-visible { outline: 1px solid var(--accent); outline-offset: 3px; }
 .theme-toggle {
