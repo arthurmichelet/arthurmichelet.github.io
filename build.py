@@ -69,12 +69,19 @@ GITHUB_SVG = (
     '22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>'
 )
 
-FONTS = (
+_GOOGLE_FONTS = (
     '<link rel="preconnect" href="https://fonts.googleapis.com">'
     '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>'
-    '<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@500;700&family=IBM+Plex+Mono:wght@500;700'
-    '&family=Google+Sans+Flex&display=swap" rel="stylesheet">'
+    '<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,700;1,400'
+    '&family=IBM+Plex+Mono:wght@500;700&family=Google+Sans+Flex:wght@400;500;700&display=swap" rel="stylesheet">'
 )
+# Erode and Satoshi are served by Fontshare (free, ITF Free Font License); only the "retro-variant" look uses them.
+_FONTSHARE_FONTS = (
+    '<link rel="preconnect" href="https://api.fontshare.com">'
+    '<link rel="preconnect" href="https://cdn.fontshare.com" crossorigin>'
+    '<link href="https://api.fontshare.com/v2/css?f[]=erode@400,500,600,700&f[]=satoshi@400,500,700&display=swap" rel="stylesheet">'
+)
+FONTS = _FONTSHARE_FONTS if getattr(content, "THEME", "") == "retro-variant" else _GOOGLE_FONTS
 
 # Applied on top of nbconvert's JupyterLab theme (the site header comes from style.css).
 NOTEBOOK_CSS = """
@@ -391,9 +398,14 @@ def convert_notebooks():
         head_extra = FONTS + FAVICON + NOTEBOOK_CSS
     else:
         head_extra = FONTS + FAVICON + '<link rel="stylesheet" href="../style.css">' + NOTEBOOK_CSS
-    if cards:   # headings in the theme's monospaced face
+    if cards:   # headings in the theme's heading face (monospaced for "retro", Erode for "retro-variant")
+        face = ("'Erode', Georgia, serif" if getattr(content, "THEME", "") == "retro-variant"
+                else "'IBM Plex Mono', ui-monospace, Menlo, monospace")
         head_extra += ("<style>.jp-RenderedHTMLCommon h1, .jp-RenderedHTMLCommon h2, "
-                       ".jp-RenderedHTMLCommon h3 { font-family: 'IBM Plex Mono', ui-monospace, Menlo, monospace; }</style>")
+                       ".jp-RenderedHTMLCommon h3 { font-family: " + face + "; }</style>")
+        if getattr(content, "THEME", "") == "retro-variant":   # notebook text in Satoshi too
+            head_extra += ("<style>:root { --jp-ui-font-family: 'Satoshi', system-ui, sans-serif; "
+                           "--jp-content-font-family: 'Satoshi', system-ui, sans-serif; }</style>")
     site_header = "" if cards else header("../", current="explore", wide=True)
     if cards and VIEW.exists():
         shutil.rmtree(VIEW)

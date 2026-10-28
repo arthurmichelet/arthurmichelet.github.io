@@ -11,7 +11,7 @@
   --neon: #00FFA6;
   --line: rgba(51, 51, 51, .28);
   --rule: var(--line);
-  --page: #f4feff;       /* page background */
+  --page: #fafafa;       /* page background, blueish: f4feff */
   --raised: #fff;        /* lists, pills, hovered tabs */
   --tint2: #BDFFE8;      /* orange card */
   --tint3: #caffff;      /* neon card */

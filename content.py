@@ -5,8 +5,9 @@ After changing anything, run:  python3 build.py
 
 NAME = "Arthur Michelet"
 
-# Look of the site: "retro" (theme-retro.css, on top of style.css) or "classic" (style.css only).
-THEME = "retro"
+# Look of the site: "retro-variant" (theme-retro-variant.css: Erode name, titles and introduction, Satoshi for the rest),
+# "retro" (theme-retro.css: monospaced headings), both on top of style.css, or "classic" (style.css only).
+THEME = "retro-variant"
 
 SITE_URL = "https://arthurmichelet.com"
 SITE_DESCRIPTION = ("Arthur Michelet, PhD candidate in history at the University of Lausanne, "

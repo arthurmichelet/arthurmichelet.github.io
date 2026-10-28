@@ -8,7 +8,8 @@ Pages: **home** (name + a "start" button leading to info), **info** (paragraph, 
 |---|---|
 | `content.py` | All the text: name, info paragraph, contact, ORCID, grants and awards, interests, publications, published notebooks. Edit this. |
 | `build.py` | Generates the HTML pages. Run it after any change. |
-| `theme-retro.css` | The retro-technical look (boxes, tabs, window title bars), loaded on top of `style.css`. |
+| `theme-retro.css` | The retro-technical look (boxes, tabs, window title bars, monospaced headings), loaded on top of `style.css`. |
+| `theme-retro-variant.css` | The same retro look with other fonts: Erode for the name, the titles and the info introduction, Satoshi for everything else (both from Fontshare). |
 | `style.css` | The look, mirroring `plot_style.py`. Highlight colour is `--accent`. |
 | `assets/` | `bg.webp` and `bg-portrait.webp`: the grainy background (generated, but committed so the site can use it). |
 | `make_background.py` | Generates those two images in your palette. Optional: `pip3 install numpy pillow`, then `python3 make_background.py 12` (any number = a different pattern). Edit `PALETTE` / the blob lists at the top to change colours and where they sit. |
@@ -66,7 +67,7 @@ Each figure and notebook is a card: title, short description, preview picture an
 
 ## Looks (themes)
 
-`THEME` in `content.py` picks the look: `"retro"` (default, `theme-retro.css` on top of `style.css`) or `"classic"` (`style.css` alone, the original look). Change it and run `python3 build.py`. `style.css` is not modified by the retro theme, so going back is always one word.
+`THEME` in `content.py` picks the look: `"retro-variant"` (`theme-retro-variant.css` on top of `style.css`: Erode for the name, titles and info introduction, Satoshi for the rest; both fonts come from Fontshare, see `FONTS` in `build.py`), `"retro"` (`theme-retro.css`: monospaced headings) or `"classic"` (`style.css` alone, the original look). Change it and run `python3 build.py`. `style.css` is not modified by the retro themes, so going back is always one word. The two retro files are independent copies: a change to the colours or layout has to be made in both.
 
 ## Style
 

@@ -52,7 +52,7 @@ body.site {
   min-height: 100vh;
   color: var(--text);
   font-family: 'Google Sans Flex', sans-serif;
-  font-size: 17px;
+  font-size: 16px;
   line-height: 1.6;
   background: transparent;   /* the texture (body::before) shows through */
 }
