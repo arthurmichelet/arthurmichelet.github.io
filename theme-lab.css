@@ -1,0 +1,456 @@
+/* Lab look. Loaded after style.css, so style.css (the "classic" look) is untouched: set
+   THEME = "classic" in content.py and rebuild to go back. Select this look with THEME = "lab".
+
+   Inspired by the NotesLab theme (WordPress.com): warm grey page, a large light name, serif text
+   with a geometric sans for headings and labels, dashed guide lines, one controlled accent;
+   and by forensic-architecture.org: hairline rules, small uppercase labels, ruled grids of
+   metadata, red index numbers on every entry, no shadows and no motion.
+   Fonts: Satoshi (headings, labels, menu) and Gambetta (running text), both from Fontshare.
+   The menu sits in a hairline box at the top right, like the NotesLab theme.
+   Same lowercase titles and palette; the accent (--accent, orange) is used for the index
+   numbers and for hover, the deep green for the active menu item. */
+
+:root {
+  --ink: #1f1f1f;
+  --paper: #fff;
+  --raised: #fff;
+  --page: #fff;                   /* page (NotesLab's warm grey would be #eeece7) */
+  --mint: #C0F3E2;                /* hover / highlight tint */
+  --deep: #085041;                /* active menu item */
+  --neon: #00FFA6;
+  --line: rgba(31, 31, 31, .22);  /* row separators */
+  --rule: var(--line);
+  --muted: rgba(31, 31, 31, .62);
+  --tag: #e4e2dd;                 /* non-clickable pills */
+  --tag-text: #3a3a38;
+  --bg-top: #e6e5e1; --bg-side: #b5b4af; --bg-label: #2d2d2b;   /* resting grey bricks */
+  --on-accent: #111111;
+  --head: 'Satoshi', system-ui, sans-serif;
+  --body: 'Gambetta', Georgia, serif;
+  color-scheme: light;
+}
+
+/* ── dark mode (system setting, or the switch in the header): the same palette, inverted ── */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --text: #ebfff8;
+    --ink: #C0F3E2;
+    --paper: #0a2b24;
+    --raised: #06201a;
+    --page: #04171a;
+    --mint: #0f4a3c;
+    --deep: #1D9E75;
+    --line: rgba(192, 243, 226, .28);
+    --rule: var(--line);
+    --muted: rgba(217, 247, 236, .65);
+    --tag: #33403c;
+    --tag-text: #c3d3cd;
+    --bg-top: #3a4a45; --bg-side: #26332f; --bg-label: #c9d6d1;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --text: #d9f7ec;
+  --ink: #C0F3E2;
+  --paper: #0a2b24;
+  --raised: #06201a;
+  --page: #04171a;
+  --mint: #0f4a3c;
+  --deep: #1D9E75;
+  --line: rgba(192, 243, 226, .28);
+  --rule: var(--line);
+  --muted: rgba(217, 247, 236, .65);
+  --tag: #33403c;
+  --tag-text: #d7e3de;
+  --bg-top: #3a4a45; --bg-side: #26332f; --bg-label: #c9d6d1;
+  color-scheme: dark;
+}
+:root[data-theme="light"] { color-scheme: light; }
+
+/* ── page: one flat colour, dashed guide lines at the edges of the column (wide screens) ── */
+html { background: var(--page); }
+body.site::before { background: var(--page); }
+body.site {
+  font-family: var(--body);
+  font-size: 17px;
+  line-height: 1.7;
+  color: var(--ink);
+  --col: 1280px;                        /* the width between the dashed guide lines */
+}
+@media (min-width: 1160px) {
+  body.site::after {
+    content: "";
+    position: fixed; top: 0; bottom: 0;
+    left: max(20px, calc(50% - var(--col) / 2)); right: max(20px, calc(50% - var(--col) / 2));
+    border-left: 1px dashed var(--line);
+    border-right: 1px dashed var(--line);
+    pointer-events: none;
+  }
+}
+.site a { color: var(--ink); }
+
+/* ── header: the menu in a hairline box at the top right, then the large light name ───── */
+.site-header, .site-header.wide {
+  display: flex; flex-direction: column;
+  max-width: calc(var(--col) - 4px); padding: 36px 24px 0;
+  color: var(--ink); font-family: var(--head);
+}
+.nav-row {
+  order: -1;
+  align-self: flex-end;
+  display: flex; align-items: center;
+  gap: 14px;
+  max-width: 100%;
+  margin: 0 0 44px;
+  padding: 10px 12px;
+  border: 1px solid var(--ink);
+  background: var(--paper);           /* opaque, so the dashed guide line doesn't show through */
+  position: relative; z-index: 1;
+}
+.site-name {
+  font-family: var(--head);
+  font-weight: 500;
+  font-size: clamp(2.6rem, 6.4vw, 4rem);
+  line-height: 1.02;
+  letter-spacing: -.03em;
+  color: var(--ink);
+}
+.site-header nav { margin-top: 0; gap: 4px; font-size: 15px; }
+.site-header nav a {
+  padding: 4px 14px;
+  color: var(--ink);
+  line-height: 1.5;
+  transition: color .15s, background-color .15s;
+}
+.site-header nav a:hover { color: var(--accent); }
+.site-header nav a.current { background: var(--deep); color: #fff; font-weight: 700; }
+.site-header nav a.current:hover { color: var(--neon); }
+
+.theme-toggle {
+  order: -1;                          /* first in the box, where NotesLab has its search icon */
+  display: inline-flex; align-items: center;
+  margin: 0;
+  padding: 4px 4px;
+  font: inherit; font-size: 15px; line-height: 1.5;
+  color: var(--ink);
+  background: none; border: 0;
+  cursor: pointer;
+  transition: color .15s;
+}
+.theme-toggle span { display: inline-flex; align-items: center; gap: 8px; }
+.theme-toggle .to-light { display: none; }
+.theme-toggle:hover { color: var(--accent); }
+.theme-toggle:focus-visible { outline: 1px solid var(--accent); outline-offset: 3px; }
+:root[data-theme="dark"] .theme-toggle .to-dark { display: none; }
+:root[data-theme="dark"] .theme-toggle .to-light { display: inline-flex; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .theme-toggle .to-dark { display: none; }
+  :root:not([data-theme="light"]) .theme-toggle .to-light { display: inline-flex; }
+}
+@media (min-width: 1160px) {            /* the box pokes out slightly past the dashed guide line */
+  .site-header { --ext: min(72px, calc((100vw - min(var(--col) - 4px, 100vw)) / 2 + 6px)); }   /* how far past the column, never past the window */
+  .nav-row { margin-right: calc(-1 * var(--ext)); }
+}
+@media (max-width: 520px) {
+  .site-header { padding-top: 24px; }
+  .theme-toggle span > span { display: none; }
+  .nav-row { gap: 6px; padding: 8px; margin-bottom: 32px; }
+  .site-header nav a { padding: 4px 9px; }
+}
+
+/* home: the start button */
+.site-header .start {
+  margin-top: 36px;
+  padding: 10px 30px;
+  font-family: var(--head);
+  font-size: 15px;
+  color: var(--on-accent);
+  background: var(--accent);
+  border: 1px solid var(--ink);
+  border-radius: 0;
+  transition: color .15s, background-color .15s;
+}
+.site-header .start:hover { color: var(--paper); background: var(--ink); border-color: var(--ink); }
+.site-header:has(.start) .nav-row { display: contents; }     /* home: the switch top right, the start button under the name */
+.site-header:has(.start) { position: relative; }
+.site-header:has(.start) .theme-toggle { position: absolute; top: 36px; right: 24px; }
+.site-header:has(.start) .start { align-self: flex-start; }
+@media (min-width: 1160px) { .site-header:has(.start) .theme-toggle { right: calc(24px - var(--ext)); } }   /* ...and past the guide line, like the menu box */
+
+/* ── main: no panel, the page is the sheet ─────────────────────────────────────── */
+.site main {
+  width: calc(100% - 48px);
+  max-width: calc(var(--col) - 52px);
+  margin: 0 auto 96px;
+  padding: 8px 0 0;
+  background: none; border: 0; box-shadow: none; border-radius: 0;
+  counter-reset: viz nb;
+}
+.site main.bare, .site main.wide { max-width: calc(var(--col) - 52px); }
+body.home main { display: none; }
+.site p:first-child { margin-top: 0; }
+.site main > p { max-width: 68ch; }
+
+/* ── titles: a hairline rule and a small uppercase label, set to the right ── */
+.site h1, .site h2, .site h3 { font-family: var(--head); font-weight: 500; color: var(--ink); }
+.site h2 {
+  display: flex; align-items: baseline; justify-content: flex-end; gap: 14px;   /* the label sits at the right end of its rule */
+  margin: 52px 0 0;
+  text-align: right;
+  padding-top: 10px;
+  border-top: 1px solid var(--ink);
+  font-size: 12px; line-height: 1.4;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+.site main.bare h2 { margin-top: 52px; }
+/* the rule above a section runs the full width of the window (the column is centred, so 50% is the middle of the screen) */
+body.site { overflow-x: clip; }
+.site main > h2 { position: relative; border-top: 0; }
+.site main > h2::before {
+  content: "";
+  position: absolute; top: 0; left: 50%;
+  width: 100vw; margin-left: -50vw; height: 1px;
+  background: var(--ink);
+}
+/* the first title keeps its rule, a little closer to the name */
+.site h2:first-child, .site h1.sr-only + h2, .site main.bare h1.sr-only + h2 { margin-top: 30px; }
+.viewer-side h2:first-of-type { margin-top: 0; }
+
+/* the introduction on the info page: serif text a little larger than body text, starting under the name,
+   with a vertical "about" label in the space on its left */
+.site main[data-page="info"] > p:first-of-type {
+  position: relative;
+  max-width: none;                      /* runs to the right edge of the column, like the titles and rules */
+  margin: 8px 0 8px;
+  padding-left: 40px;
+  font-size: 19px; line-height: 1.7;
+}
+.site main[data-page="info"] > p:first-of-type::before {
+  content: "about";
+  position: absolute; left: 0; top: .5em;
+  writing-mode: vertical-rl; transform: rotate(180deg);   /* reads bottom to top */
+  font-family: var(--head); font-weight: 700;
+  -webkit-text-stroke: .6px currentColor;   /* a touch heavier than Satoshi Bold, without loading another weight */
+  font-size: 12px; line-height: 1; letter-spacing: .1em; text-transform: uppercase;
+}
+@media (max-width: 700px) {
+  .site main[data-page="info"] > p:first-of-type { padding: 0; font-size: 17px; }
+  .site main[data-page="info"] > p:first-of-type::before { display: none; }
+}
+
+/* links: thin underline, accent on hover */
+.site main p a:not(.pill), .site .card-text a, .site .viewer-side li a {
+  text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px;
+}
+.site main p a:not(.pill):hover, .site .card-text a:hover, .site .viewer-side li a:hover,
+.site main a:hover { color: var(--accent); }
+
+/* ── contact: a ruled grid of small labels and values ──────────────────────── */
+dl.contact {
+  display: grid;
+  grid-template-columns: 9rem 1fr;
+  gap: 0;
+  margin: 0;
+  border: 0;
+  background: none;
+}
+dl.contact dt, dl.contact dd {
+  margin: 0;
+  padding: 11px 0;
+  border-bottom: 1px solid var(--line);
+}
+dl.contact dt, dl.contact dd { display: flex; align-items: center; flex-wrap: wrap; }
+dl.contact dt {
+  opacity: 1; color: var(--muted);
+  font-family: var(--head);
+  font-size: 11px; letter-spacing: .1em; text-transform: uppercase;
+}
+dl.contact dd { font-family: var(--head); font-size: 15.5px; }
+dl.contact dt:hover, dl.contact dd:hover { background: none; }
+dl.contact dt:nth-last-of-type(1), dl.contact dd:last-of-type { border-bottom: 0; }
+@media (max-width: 520px) {
+  dl.contact { grid-template-columns: 1fr; }
+  dl.contact dt { padding-bottom: 0; border-bottom: 0; }
+}
+
+/* ── lists (grants, publications): ruled rows ─────────────────────────────────── */
+.site ul.items { margin: 0; border: 0; background: none; }
+.site ul.items li {
+  padding: 13px 8px 13px 0;
+  border-bottom: 1px solid var(--line);
+  transition: background-color .12s;
+}
+.site ul.items li:hover { background: var(--mint); }
+.site ul.items li:last-child { border-bottom: 0; }          /* the last row has no rule under it */
+.site .entry-title { font-size: 16px; }
+.meta { font-family: var(--head); font-size: 12.5px; letter-spacing: .02em; opacity: .7; }
+.empty { opacity: .65; margin-top: 14px; }
+
+/* ── pills: hairline tags ─────────────────────────────────────────────────── */
+.pill {
+  padding: 1px 10px;
+  font-family: var(--head);
+  font-size: 12px; letter-spacing: .03em;
+  border: 1px solid var(--ink);
+  border-radius: 0;
+  background: var(--raised);
+  color: var(--ink);
+}
+span.pill { background: var(--tag); color: var(--tag-text); border-color: transparent; }
+.site a.pill:hover { color: var(--paper); background: var(--ink); border-color: var(--ink); }
+
+/* ── publications: Chicago-style references ───────────────────────────────── */
+.site .ref { display: block; font-size: 16px; line-height: 1.6; padding-left: 1.5em; text-indent: -1.5em; }
+.site .ref em { font-style: italic; }
+.site a.ref-url { overflow-wrap: anywhere; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+.site a.ref-url:hover { color: var(--accent); }
+
+/* ── explore: ruled cards, each with an orange code (v.1 visualisations, n.1 notebooks) ───────────────────────── */
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 24px;
+  margin-top: 22px;
+}
+.card {
+  position: relative;
+  display: flex; flex-direction: column;
+  padding: 0;
+  background: var(--raised);
+  border: 1px solid var(--ink);
+  border-radius: 0;
+}
+.card:hover { background: var(--mint); }
+.site .card-title {
+  margin: 0;
+  padding: 14px 58px 10px 16px;
+  font-size: 18px; font-weight: 500; line-height: 1.3;
+}
+.site .card-title::before {
+  display: block; margin-bottom: 5px;
+  color: var(--accent);
+  font-size: 11px; font-weight: 500; letter-spacing: .1em;
+}
+.site .card-plot .card-title::before { counter-increment: viz; content: "v." counter(viz); }
+.site .card-notebook .card-title::before { counter-increment: nb; content: "n." counter(nb); }
+.site .card-title a:hover { color: var(--accent); }
+.card-icon {
+  position: absolute; top: 0; right: 0;
+  display: grid; place-items: center;
+  width: 46px; height: 46px;
+  color: var(--ink);
+  border-left: 1px solid var(--ink);
+  border-bottom: 1px solid var(--ink);
+  background: var(--paper);
+}
+.card-text { margin: 0; padding: 4px 16px 16px; font-size: 15px; line-height: 1.6; }
+.card-preview {
+  display: block;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  border-top: 1px solid var(--ink);
+  border-bottom: 1px solid var(--ink);
+  background: #fff;
+}
+.card-preview img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top left; }
+.card-links { display: flex; flex-wrap: wrap; gap: 10px; margin-top: auto; padding: 12px 16px; }
+.card-text + .card-links { border-top: 1px solid var(--ink); }
+.card-preview + .card-links { margin-top: 0; }
+
+/* ── viewer page: figure or notebook on the left, description + methodology on the right ── */
+.viewer { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 32px; align-items: start; margin-top: 8px; }
+.viewer-frame { border: 1px solid var(--ink); border-radius: 0; background: #fff; }
+.viewer-frame iframe { display: block; width: 100%; height: clamp(520px, 78vh, 940px); border: 0; background: #fff; }
+.viewer-side { position: sticky; top: 24px; }
+.site .viewer-title { margin: 0 0 22px; font-size: 24px; font-weight: 400; line-height: 1.25; }
+.viewer-side h2 { margin-top: 28px; }
+.viewer-side p, .viewer-side li { font-size: 15px; line-height: 1.65; }
+.viewer-side ul.plain { margin: 0; padding-left: 1.1em; }
+.viewer-side ul.plain li { margin-bottom: 8px; }
+.viewer-licence { margin-top: 18px; font-size: 0.78rem; line-height: 1.5; opacity: 0.7; }
+.viewer-licence a { color: inherit; text-decoration: underline; text-underline-offset: 2px; }
+.viewer-links { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 28px; }
+@media (max-width: 860px) {
+  .viewer { grid-template-columns: 1fr; }
+  .viewer-side { position: static; }
+  .viewer-frame iframe { height: 70vh; }
+}
+.viewer-frame[data-w]{overflow:hidden}
+.viewer-frame[data-w] iframe{height:auto;max-width:none;transform-origin:0 0}
+
+/* ── research interests: stacked bricks (info page) ────────────────────────────
+   Same construction as the retro looks, drawn with hairlines. Grey at rest; hovering a slab or its
+   box colours both and thickens the thread; the box lifts with a hard offset shadow. */
+.bricks { position: relative; margin-top: 18px; padding: 34px 0 124px; }
+.brick {
+  position: relative; height: 104px;
+  --cur-t: var(--bg-top); --cur-s: var(--bg-side);
+  --cur-label: var(--bg-label); --cur-box: var(--raised); --cur-line: var(--ink);
+}
+.brick:has(.shape:hover, .brick-box:hover) {
+  --cur-t: var(--top); --cur-s: var(--side);
+  --cur-label: #fff; --cur-box: var(--top); --cur-line: var(--side);
+}
+@media (hover: none) {
+  .brick { --cur-t: var(--top); --cur-s: var(--side); --cur-label: #fff; --cur-box: var(--top); --cur-line: var(--side); }
+}
+.brick-slab {
+  position: absolute; left: 50%; top: 0;
+  width: 320px; height: 184px; margin-left: -160px;
+  overflow: visible; pointer-events: none;
+}
+.brick-slab .shape { pointer-events: auto; }
+.brick-slab .outline { fill: none; stroke: var(--ink); stroke-width: 3; stroke-linejoin: round; }
+.brick-slab .side { fill: var(--cur-s); stroke: none; }
+.brick-slab .top { fill: var(--cur-t); stroke: var(--ink); stroke-width: 1.5; stroke-linejoin: round; }
+.brick-slab .bevel { fill: none; stroke: rgba(255, 255, 255, .4); stroke-width: 1.5; pointer-events: none; }
+.brick-slab text {
+  fill: var(--cur-label); text-anchor: middle; pointer-events: none;
+  font: 700 12px 'Satoshi', system-ui, sans-serif;
+  letter-spacing: .14em;
+}
+.brick-slab .side, .brick-slab .top { transition: fill 120ms; }
+
+.brick-side {
+  position: absolute;
+  top: calc(74px + var(--dy));
+  width: calc(50% - 131px - var(--gap));
+  transform: translateY(-50%);
+}
+.brick-left .brick-side { left: 0; }
+.brick-right .brick-side { right: 0; }
+.brick-line { position: absolute; overflow: visible; pointer-events: none; }
+.brick-line path { fill: none; stroke: var(--cur-line); stroke-width: 1.5; transition: stroke-width 120ms; }
+.brick:has(.shape:hover, .brick-box:hover) .brick-line path { stroke-width: 3; }
+.brick-left .brick-line { left: 100%; }
+.brick-right .brick-line { right: 100%; transform: scaleX(-1); }
+
+.brick-box {
+  position: relative; margin: 0; padding: 10px; list-style: none;
+  display: grid; gap: 6px;
+  background: var(--cur-box);
+  border: 1px solid var(--ink);
+  border-radius: 0;
+  transition: transform 120ms ease-in-out, box-shadow 120ms ease-in-out, background-color 120ms;
+}
+@media (hover: hover) {                         /* the slab stays put; the box lifts and pops out with an offset shadow, as in the retro look */
+  .brick:has(.shape:hover, .brick-box:hover) .brick-box { transform: translate(6px, -6px); box-shadow: -12px 12px 0 var(--ink); }
+  .brick-right:has(.shape:hover, .brick-box:hover) .brick-box { transform: translate(-6px, -6px); box-shadow: 12px 12px 0 var(--ink); }
+}
+.brick-box li {
+  padding: 5px 10px;
+  font-size: 14px; line-height: 1.4;
+  background: var(--paper);
+  border: 1px solid var(--ink);
+  border-radius: 0;
+}
+@media (prefers-reduced-motion: reduce) { .brick-box, .brick-line path, .brick-slab .side, .brick-slab .top, .site ul.items li { transition: none; } }
+
+@media (max-width: 860px) {
+  .bricks { padding: 0; }
+  .brick { height: auto; margin-bottom: 24px; }
+  .brick-slab { position: relative; left: auto; display: block; width: 280px; height: 161px; margin: 0 auto 6px; }
+  .brick-side { position: relative; top: auto; width: auto; transform: none; }
+  .brick-line { display: none; }
+}

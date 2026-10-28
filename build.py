@@ -81,7 +81,14 @@ _FONTSHARE_FONTS = (
     '<link rel="preconnect" href="https://cdn.fontshare.com" crossorigin>'
     '<link href="https://api.fontshare.com/v2/css?f[]=erode@400,500,600,700&f[]=satoshi@400,500,700&display=swap" rel="stylesheet">'
 )
-FONTS = _FONTSHARE_FONTS if getattr(content, "THEME", "") == "retro-variant" else _GOOGLE_FONTS
+# "lab" look: Satoshi (headings, labels) and Gambetta (text), both from Fontshare, like "retro-variant".
+_LAB_FONTS = (
+    '<link rel="preconnect" href="https://api.fontshare.com">'
+    '<link rel="preconnect" href="https://cdn.fontshare.com" crossorigin>'
+    '<link href="https://api.fontshare.com/v2/css?f[]=satoshi@300,400,500,700&f[]=gambetta@300,400,400i,500,600'
+    '&display=swap" rel="stylesheet">'
+)
+FONTS = {"retro-variant": _FONTSHARE_FONTS, "lab": _LAB_FONTS}.get(getattr(content, "THEME", ""), _GOOGLE_FONTS)
 
 # Applied on top of nbconvert's JupyterLab theme (the site header comes from style.css).
 NOTEBOOK_CSS = """
@@ -398,14 +405,17 @@ def convert_notebooks():
         head_extra = FONTS + FAVICON + NOTEBOOK_CSS
     else:
         head_extra = FONTS + FAVICON + '<link rel="stylesheet" href="../style.css">' + NOTEBOOK_CSS
-    if cards:   # headings in the theme's heading face (monospaced for "retro", Erode for "retro-variant")
-        face = ("'Erode', Georgia, serif" if getattr(content, "THEME", "") == "retro-variant"
-                else "'IBM Plex Mono', ui-monospace, Menlo, monospace")
+    if cards:   # headings (and for some looks the text) in the theme's own fonts
+        theme = getattr(content, "THEME", "")
+        face = {"retro-variant": "'Erode', Georgia, serif",
+                "lab": "'Satoshi', system-ui, sans-serif"}.get(theme, "'IBM Plex Mono', ui-monospace, Menlo, monospace")
         head_extra += ("<style>.jp-RenderedHTMLCommon h1, .jp-RenderedHTMLCommon h2, "
                        ".jp-RenderedHTMLCommon h3 { font-family: " + face + "; }</style>")
-        if getattr(content, "THEME", "") == "retro-variant":   # notebook text in Satoshi too
-            head_extra += ("<style>:root { --jp-ui-font-family: 'Satoshi', system-ui, sans-serif; "
-                           "--jp-content-font-family: 'Satoshi', system-ui, sans-serif; }</style>")
+        body_face = {"retro-variant": "'Satoshi', system-ui, sans-serif",
+                     "lab": "'Gambetta', Georgia, serif"}.get(theme)
+        if body_face:   # notebook text in the look's text font
+            head_extra += ("<style>:root { --jp-ui-font-family: " + body_face + "; "
+                           "--jp-content-font-family: " + body_face + "; }</style>")
     site_header = "" if cards else header("../", current="explore", wide=True)
     if cards and VIEW.exists():
         shutil.rmtree(VIEW)
@@ -768,7 +778,7 @@ def card_section(heading, rows):
             for label, href in row["pills"]
         )
         cards.append(
-            f'<article class="card">'
+            f'<article class="card card-{row["kind"]}">'
             f'<span class="card-icon">{icon}</span>'
             f'<h3 class="card-title"><a href="{first}">{title}</a></h3>'
             f"{text}{preview}"

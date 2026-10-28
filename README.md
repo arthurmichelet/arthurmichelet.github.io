@@ -9,6 +9,7 @@ Pages: **home** (name + a "start" button leading to info), **info** (paragraph, 
 | `content.py` | All the text: name, info paragraph, contact, ORCID, grants and awards, interests, publications, published notebooks. Edit this. |
 | `build.py` | Generates the HTML pages. Run it after any change. |
 | `theme-retro.css` | The retro-technical look (boxes, tabs, window title bars, monospaced headings), loaded on top of `style.css`. |
+| `theme-lab.css` | The lab look, inspired by NotesLab (WordPress.com) and forensic-architecture.org: warm grey page, large light name, hairline rules, red index numbers, Satoshi + Gambetta (Fontshare), menu in a box at the top right. Select with `THEME = "lab"`. |
 | `theme-retro-variant.css` | The same retro look with other fonts: Erode for the name, the titles and the info introduction, Satoshi for everything else (both from Fontshare). |
 | `style.css` | The look, mirroring `plot_style.py`. Highlight colour is `--accent`. |
 | `assets/` | `bg.webp` and `bg-portrait.webp`: the grainy background (generated, but committed so the site can use it). |
@@ -67,7 +68,7 @@ Each figure and notebook is a card: title, short description, preview picture an
 
 ## Looks (themes)
 
-`THEME` in `content.py` picks the look: `"retro-variant"` (`theme-retro-variant.css` on top of `style.css`: Erode for the name, titles and info introduction, Satoshi for the rest; both fonts come from Fontshare, see `FONTS` in `build.py`), `"retro"` (`theme-retro.css`: monospaced headings) or `"classic"` (`style.css` alone, the original look). Change it and run `python3 build.py`. `style.css` is not modified by the retro themes, so going back is always one word. The two retro files are independent copies: a change to the colours or layout has to be made in both.
+`THEME` in `content.py` picks the look: `"lab"` (`theme-lab.css`: ruled and hairline, no shadows or movement; Satoshi for headings and labels, Gambetta for text, both from Fontshare; menu in a box at the top right; titles carry a red index number; the cards carry codes "I.01", "I.02"), `"retro-variant"` (`theme-retro-variant.css` on top of `style.css`: Erode for the name, titles and info introduction, Satoshi for the rest; both fonts come from Fontshare, see `FONTS` in `build.py`), `"retro"` (`theme-retro.css`: monospaced headings) or `"classic"` (`style.css` alone, the original look). Change it and run `python3 build.py`. `style.css` is not modified by the retro themes, so going back is always one word. The two retro files and `theme-lab.css` are independent files: a change to the colours or layout has to be made in both.
 
 ## Style
 
