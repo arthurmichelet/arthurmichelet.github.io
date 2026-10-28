@@ -377,11 +377,11 @@ span.pill { background: var(--tag); color: var(--tag-text); border-color: transp
 .card-preview + .card-links { margin-top: 0; }
 
 /* ── viewer page: figure or notebook on the left, description + methodology on the right ── */
-.viewer { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 32px; align-items: start; margin-top: 8px; }
-.viewer-frame { border: 1px solid var(--ink); border-radius: 0; background: #fff; }
+.viewer { display: grid; grid-template-columns: minmax(0, 1fr) 340px; grid-template-rows: auto 1fr; gap: 0 32px; align-items: start; margin-top: 8px; }
+.viewer-frame { border: 0; border-radius: 0; background: #fff; grid-column: 1; grid-row: 2; }
 .viewer-frame iframe { display: block; width: 100%; height: clamp(520px, 78vh, 940px); border: 0; background: #fff; }
-.viewer-side { position: sticky; top: 24px; }
-.site .viewer-title { margin: 0 0 22px; font-size: 24px; font-weight: 400; line-height: 1.25; }
+.viewer-side { position: sticky; top: 24px; grid-column: 2; grid-row: 2; }
+.site .viewer-title { grid-column: 1; grid-row: 1; margin: 0 0 6px; font-size: 24px; font-weight: 400; line-height: 1.25; }
 .viewer-side h2 { margin-top: 28px; }
 .viewer-side p, .viewer-side li { font-size: 15px; line-height: 1.65; }
 .viewer-side ul.plain { margin: 0; padding-left: 1.1em; }
@@ -390,7 +390,8 @@ span.pill { background: var(--tag); color: var(--tag-text); border-color: transp
 .viewer-licence a { color: inherit; text-decoration: underline; text-underline-offset: 2px; }
 .viewer-links { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 28px; }
 @media (max-width: 860px) {
-  .viewer { grid-template-columns: 1fr; }
+  .viewer { grid-template-columns: 1fr; grid-template-rows: none; row-gap: 24px; }
+  .site .viewer-title, .viewer-frame, .viewer-side { grid-column: 1; grid-row: auto; }
   .viewer-side { position: static; }
   .viewer-frame iframe { height: 70vh; }
 }
@@ -491,3 +492,54 @@ span.pill { background: var(--tag); color: var(--tag-text); border-color: transp
   .viewer { gap: 24px; }
   .site-header:has(.start) .theme-toggle { top: 14px; right: 6px; }
 }
+
+/* ── the menu stays on screen while scrolling (every page but the start page) ──────────────
+   The box is fixed in the same spot it has at the top of the page; the header keeps its room. */
+.site-header:not(:has(.start)) { padding-top: 134px; }
+.site-header:not(:has(.start)) .nav-row {
+  position: fixed; z-index: 50;
+  top: 36px; margin: 0;
+  right: calc((100% - min(var(--col) - 4px, 100%)) / 2 + 24px - var(--ext, 0px));   /* where it sits in the column */
+}
+@media (max-width: 520px) {
+  .site-header:not(:has(.start)), .site-header.wide:not(:has(.start)) { padding-top: 100px; }
+  .site-header:not(:has(.start)) .nav-row { top: 20px; left: 20px; right: 20px; }
+}
+
+/* ...except on the notebook and visualisation pages (the ones opened from an explore card): there the menu scrolls away with the page */
+body:has(main.viewer-page) .site-header.wide { padding-top: 36px; }
+body:has(main.viewer-page) .site-header .nav-row {
+  position: relative; z-index: 1;
+  top: auto; left: auto; right: auto;
+  margin: 0 0 44px;
+}
+@media (min-width: 1160px) { body:has(main.viewer-page) .site-header .nav-row { margin-right: calc(-1 * var(--ext)); } }
+@media (max-width: 520px) {
+  body:has(main.viewer-page) .site-header.wide { padding-top: 20px; }
+  body:has(main.viewer-page) .site-header .nav-row { margin-bottom: 28px; }
+}
+
+/* ── footer: a full-width rule and the copyright line, right-aligned like the section titles ── */
+.site-footer {
+  position: relative;
+  width: calc(100% - 48px); max-width: calc(var(--col) - 52px);
+  margin: 0 auto; padding: 12px 0 28px;
+}
+.site-footer::before {
+  content: "";
+  position: absolute; top: 0; left: 50%;
+  width: 100vw; margin-left: -50vw; height: 1px;
+  background: var(--ink);
+}
+.site-footer p {
+  margin: 0; text-align: right;
+  font-family: var(--head); font-size: 12px; line-height: 1.4; letter-spacing: .08em;
+  color: var(--muted);
+}
+body.home .site-footer { position: fixed; left: 0; right: 0; bottom: 0; width: auto; max-width: none; margin: 0; padding: 12px 24px 20px; }
+body.home .site-footer::before { margin-left: 0; left: 0; width: 100%; }
+body.home .site-footer p { max-width: calc(var(--col) - 52px); margin: 0 auto; }
+@media (max-width: 520px) { .site-footer { width: calc(100% - 40px); } body.home .site-footer { padding: 12px 20px 16px; } }
+
+/* selected text: orange, with dark text on it */
+::selection { background: var(--accent); color: var(--on-accent); }

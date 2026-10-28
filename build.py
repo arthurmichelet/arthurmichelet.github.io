@@ -212,6 +212,16 @@ FAVICON = (
     '<link rel="apple-touch-icon" href="/apple-touch-icon.png">'
 )
 
+FOOTER_THEMES = {"lab"}   # themes with a copyright line at the bottom of every page
+COPYRIGHT_YEAR = 2026
+
+
+def footer():
+    if getattr(content, "THEME", "classic") not in FOOTER_THEMES:
+        return ""
+    return f'<footer class="site-footer"><p>\u00a9 {html.escape(content.NAME)} {COPYRIGHT_YEAR}</p></footer>\n'
+
+
 def page(title, body, current=None, root="", body_class="site", main_class=""):
     main_attr = f' class="{main_class}"' if main_class else ""
     is_home = "home" in body_class.split()
@@ -232,7 +242,7 @@ def page(title, body, current=None, root="", body_class="site", main_class=""):
 <main data-page="{html.escape(current or "home")}"{main_attr}>
 {body}
 </main>
-</body>
+{footer()}</body>
 </html>
 """
 
@@ -387,9 +397,10 @@ def write_viewer(stem, title, src, info, open_label):
             size = f' data-h="{m.group(1)}" data-w="{m.group(2)}"'
     body = (
         '<div class="viewer">\n'
+        f'<h1 class="viewer-title">{t}</h1>\n'
         f'<div class="viewer-frame"{size}><iframe src="../{html.escape(src)}" title="{t}" loading="lazy"></iframe></div>\n'
         '<aside class="viewer-side">\n'
-        f'<h1 class="viewer-title">{t}</h1>\n{sections}'
+        f'{sections}'
         f'<p class="viewer-links"><a class="pill" href="../{html.escape(src)}">{open_label}</a> '
         '<a class="pill" href="../explore.html">back to explore</a></p>\n'
         '<p class="viewer-licence">&copy; Arthur Michelet &middot; <a href="https://creativecommons.org/licenses/by-nc/4.0/">CC BY-NC 4.0</a>. '
@@ -419,6 +430,8 @@ def convert_notebooks():
                 "lab": "'Satoshi', system-ui, sans-serif"}.get(theme, "'IBM Plex Mono', ui-monospace, Menlo, monospace")
         head_extra += ("<style>.jp-RenderedHTMLCommon h1, .jp-RenderedHTMLCommon h2, "
                        ".jp-RenderedHTMLCommon h3 { font-family: " + face + "; }</style>")
+        if theme == "lab":   # the notebook page is its own document: selected text is orange there too
+            head_extra += "<style>::selection { background: #FF4D14; color: #111111; }</style>"
         body_face = {"retro-variant": "'Satoshi', system-ui, sans-serif",
                      "lab": "'Gambetta', Georgia, serif"}.get(theme)
         if body_face:   # notebook text in the look's text font
