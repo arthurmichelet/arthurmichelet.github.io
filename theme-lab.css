@@ -126,6 +126,14 @@ body.site {
 .site-header nav a.current { background: var(--deep); color: #fff; font-weight: 700; }
 .site-header nav a.current:hover { color: var(--neon); }
 
+.home-btn {                          /* the round AM monogram (apple-touch-icon.png): first in the box, links to the start page */
+  order: -2;
+  display: inline-flex; align-items: center;
+  padding: 0 8px 0 3px;
+}
+.home-btn img { display: block; width: 30px; height: 30px; border-radius: 50%; box-shadow: 0 0 0 1px var(--ink); transition: transform .15s; }   /* the round monogram, with a hairline ring */
+.home-btn:hover img { transform: scale(1.12); }
+.home-btn:focus-visible { outline: 1px solid var(--accent); outline-offset: 3px; }
 .theme-toggle {
   order: -1;                          /* first in the box, where NotesLab has its search icon */
   display: inline-flex; align-items: center;
@@ -282,9 +290,16 @@ dl.contact dt:nth-last-of-type(1), dl.contact dd:last-of-type { border-bottom: 0
 .site ul.items li {
   padding: 13px 8px 13px 0;
   border-bottom: 1px solid var(--line);
-  transition: background-color .12s;
+  /* the hover highlight spreads across the whole page width but never above or below the row:
+     the clip is always on (not only on hover), so nothing leaks while the colour fades */
+  box-shadow: 0 0 0 100vmax transparent;
+  clip-path: inset(0 -100vmax);
+  transition: background-color .12s, box-shadow .12s;
 }
-.site ul.items li:hover { background: var(--mint); }
+.site ul.items li:hover {
+  background: var(--mint);
+  box-shadow: 0 0 0 100vmax var(--mint);
+}
 .site ul.items li:last-child { border-bottom: 0; }          /* the last row has no rule under it */
 .site .entry-title { font-size: 16px; }
 .meta { font-family: var(--head); font-size: 12.5px; letter-spacing: .02em; opacity: .7; }

@@ -133,6 +133,9 @@ THEME_SCRIPT = (
 )
 
 
+HOME_BUTTON_THEMES = {"lab"}   # themes whose menu box starts with the monogram button
+
+
 def header(root="", current=None, wide=False, home=False):
     """Name on top, navigation underneath (on the home page: a single "start"
     button instead). `root` is the path back to the site root."""
@@ -148,7 +151,12 @@ def header(root="", current=None, wide=False, home=False):
     if getattr(content, "THEME", "classic") != "classic":
         # menu on the left, light/dark switch on the right. data-nosnippet: Google must not use these
         # button labels ("start", "dark", "light") as the text under the site name in its results.
-        nav = f'<div class="nav-row" data-nosnippet>{nav}{THEME_TOGGLE}</div>'
+        mark = ""
+        if not home and content.THEME in HOME_BUTTON_THEMES:
+            # the AM monogram: a button back to the start page, next to the light/dark switch
+            mark = (f'<a class="home-btn" href="{root}index.html" aria-label="start page" title="start page">'
+                    f'<img src="{root}apple-touch-icon.png" alt="" width="30" height="30"></a>')
+        nav = f'<div class="nav-row" data-nosnippet>{mark}{nav}{THEME_TOGGLE}</div>'
     return (
         f'<header class="site-header{wide_cls}">'
         f'<a class="site-name" href="{root}index.html">{html.escape(content.NAME)}</a>'
