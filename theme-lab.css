@@ -123,8 +123,8 @@ body.site {
   transition: color .15s, background-color .15s;
 }
 .site-header nav a:hover { color: var(--accent); }
-.site-header nav a.current { background: var(--deep); color: #fff; font-weight: 700; }
-.site-header nav a.current:hover { color: var(--neon); }
+.site-header nav a.current { background: #FF4D14; color: #fff; font-weight: 700; }
+.site-header nav a.current:hover { color: #fff; }
 
 .home-btn {                          /* the AM monogram (assets/monogram.png, transparent): first in the box, links to the start page */
   order: -2;
