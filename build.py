@@ -81,12 +81,14 @@ _FONTSHARE_FONTS = (
     '<link rel="preconnect" href="https://cdn.fontshare.com" crossorigin>'
     '<link href="https://api.fontshare.com/v2/css?f[]=erode@400,500,600,700&f[]=satoshi@400,500,700&display=swap" rel="stylesheet">'
 )
-# "lab" look: Satoshi (headings, labels) and Gambetta (text), both from Fontshare, like "retro-variant".
+# "lab" look: Satoshi (headings, labels; Fontshare) and Playfair Display (text; Google Fonts).
 _LAB_FONTS = (
     '<link rel="preconnect" href="https://api.fontshare.com">'
     '<link rel="preconnect" href="https://cdn.fontshare.com" crossorigin>'
-    '<link href="https://api.fontshare.com/v2/css?f[]=satoshi@300,400,500,700&f[]=gambetta@300,400,400i,500,600'
-    '&display=swap" rel="stylesheet">'
+    '<link rel="preconnect" href="https://fonts.googleapis.com">'
+    '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>'
+    '<link href="https://api.fontshare.com/v2/css?f[]=satoshi@300,400,500,700&display=swap" rel="stylesheet">'
+    '<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">'
 )
 FONTS = {"retro-variant": _FONTSHARE_FONTS, "lab": _LAB_FONTS}.get(getattr(content, "THEME", ""), _GOOGLE_FONTS)
 
@@ -433,7 +435,7 @@ def convert_notebooks():
         if theme == "lab":   # the notebook page is its own document: selected text is orange there too
             head_extra += "<style>::selection { background: #FF4D14; color: #111111; }</style>"
         body_face = {"retro-variant": "'Satoshi', system-ui, sans-serif",
-                     "lab": "'Gambetta', Georgia, serif"}.get(theme)
+                     "lab": "'Playfair Display', Georgia, serif"}.get(theme)
         if body_face:   # notebook text in the look's text font
             head_extra += ("<style>:root { --jp-ui-font-family: " + body_face + "; "
                            "--jp-content-font-family: " + body_face + "; }</style>")

@@ -5,7 +5,7 @@
    with a geometric sans for headings and labels, dashed guide lines, one controlled accent;
    and by forensic-architecture.org: hairline rules, small uppercase labels, ruled grids of
    metadata, red index numbers on every entry, no shadows and no motion.
-   Fonts: Satoshi (headings, labels, menu) and Gambetta (running text), both from Fontshare.
+   Fonts: Satoshi (headings, labels, menu; Fontshare) and Playfair Display (running text; Google Fonts).
    The menu sits in a hairline box at the top right, like the NotesLab theme.
    Same lowercase titles and palette; the accent (--accent, orange) is used for the index
    numbers and for hover, the deep green for the active menu item. */
@@ -15,9 +15,9 @@
   --paper: #fff;
   --raised: #fff;
   --page: #fff;                   /* page (NotesLab's warm grey would be #eeece7) */
-  --mint: #C0F3E2;                /* hover / highlight tint */
+  --mint: #ff4f1478;                /* hover / highlight tint C0F3E2 ff4f1465*/
   --deep: #085041;                /* active menu item */
-  --neon: #00FFA6;
+  --neon: #00FFA6;                /* 00FFA6 */
   --line: rgba(31, 31, 31, .22);  /* row separators */
   --rule: var(--line);
   --muted: rgba(31, 31, 31, .62);
@@ -26,7 +26,7 @@
   --bg-top: #e6e5e1; --bg-side: #b5b4af; --bg-label: #2d2d2b;   /* resting grey bricks */
   --on-accent: #111111;
   --head: 'Satoshi', system-ui, sans-serif;
-  --body: 'Gambetta', Georgia, serif;
+  --body: 'Playfair Display', Georgia, serif;
   color-scheme: light;
 }
 
@@ -82,8 +82,13 @@ body.site {
     content: "";
     position: fixed; top: 0; bottom: 0;
     left: max(20px, calc(50% - var(--col) / 2)); right: max(20px, calc(50% - var(--col) / 2));
-    border-left: 1px dashed var(--line);
-    border-right: 1px dashed var(--line);
+    /* two thin lines on each side, with a gap between them */
+    background:
+      linear-gradient(var(--line), var(--line)) left 0 top 0 / 1px 100% no-repeat,
+      linear-gradient(var(--line), var(--line)) left 10px top 0 / 1px 100% no-repeat,
+      linear-gradient(var(--line), var(--line)) right 0 top 0 / 1px 100% no-repeat,
+      linear-gradient(var(--line), var(--line)) right 10px top 0 / 1px 100% no-repeat;
+    opacity: .4;
     pointer-events: none;
   }
 }
@@ -109,7 +114,7 @@ body.site {
 }
 .site-name {
   font-family: var(--head);
-  font-weight: 500;
+  font-weight: 900;
   font-size: clamp(2.6rem, 6.4vw, 4rem);
   line-height: 1.02;
   letter-spacing: -.03em;
@@ -543,3 +548,21 @@ body.home .site-footer p { max-width: calc(var(--col) - 52px); margin: 0 auto; }
 
 /* selected text: orange, with dark text on it */
 ::selection { background: var(--accent); color: var(--on-accent); }
+
+/* ── name: on every page but the start and info pages it is small, at the top left, level with the menu ── */
+body.site:not(.home) .site-header:not(:has(a.current[href="info"])) { position: relative; padding-top: 112px; }
+body.site:not(.home) .site-header:not(:has(a.current[href="info"])) .site-name {
+  position: absolute; top: 52px; left: 24px;
+  font-size: 1.5rem; line-height: 1; letter-spacing: -.02em;
+}
+body.site:not(.home):has(main.viewer-page) .site-header:not(:has(a.current[href="info"])) { padding-top: 36px; }
+@media (max-width: 520px) {
+  /* little room beside the menu: the name sits just under it, still at the left */
+  body.site:not(.home) .site-header:not(:has(a.current[href="info"])),
+  body.site:not(.home) .site-header.wide:not(:has(a.current[href="info"])) { padding-top: 132px; }
+  body.site:not(.home) .site-header:not(:has(a.current[href="info"])) .site-name { top: 92px; left: 20px; font-size: 1.35rem; }
+  body.site:not(.home):has(main.viewer-page) .site-header:not(:has(a.current[href="info"])),
+  body.site:not(.home):has(main.viewer-page) .site-header.wide:not(:has(a.current[href="info"])) { padding-top: 20px; }
+  body.site:not(.home):has(main.viewer-page) .site-header:not(:has(a.current[href="info"])) .site-name { top: 92px; }
+  body:has(main.viewer-page) .site-header:not(:has(a.current[href="info"])) .nav-row { margin-bottom: 64px; }
+}
