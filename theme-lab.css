@@ -655,3 +655,7 @@ html.lg-refract body.site .site-header .nav-row {
     -webkit-backdrop-filter: none; backdrop-filter: none;
   }
 }
+
+/* home: the menu box is dissolved (display: contents), so its glass layers must go too — otherwise the sheen washes out the name */
+.site-header:has(.start) .nav-row::before,
+.site-header:has(.start) .nav-row::after { display: none !important; }
