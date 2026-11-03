@@ -224,6 +224,11 @@ def footer():
     return f'<footer class="site-footer"><p>\u00a9 {html.escape(content.NAME)} {COPYRIGHT_YEAR}</p></footer>\n'
 
 
+def glass_script(root):
+    """The liquid-glass menu's refraction script (assets/glass.js; only the "lab" look uses it)."""
+    return f'<script src="{root}assets/glass.js" defer></script>\n' if getattr(content, "THEME", "") == "lab" else ""
+
+
 def page(title, body, current=None, root="", body_class="site", main_class=""):
     main_attr = f' class="{main_class}"' if main_class else ""
     is_home = "home" in body_class.split()
@@ -244,7 +249,7 @@ def page(title, body, current=None, root="", body_class="site", main_class=""):
 <main data-page="{html.escape(current or "home")}"{main_attr}>
 {body}
 </main>
-{footer()}</body>
+{footer()}{glass_script(root)}</body>
 </html>
 """
 

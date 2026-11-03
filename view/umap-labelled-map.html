@@ -32,5 +32,6 @@
 <script>(function(){document.querySelectorAll('.viewer-frame[data-w]').forEach(function(f){var w=+f.dataset.w,h=+f.dataset.h,i=f.querySelector('iframe');i.style.width=w+'px';i.style.height=h+'px';function fit(){var k=Math.min(1,f.clientWidth/w);i.style.transform='scale('+k+')';f.style.height=(h*k)+'px';}fit();addEventListener('resize',fit);if(window.ResizeObserver)new ResizeObserver(fit).observe(f);});})();</script>
 </main>
 <footer class="site-footer"><p>© Arthur Michelet 2026</p></footer>
+<script src="../assets/glass.js" defer></script>
 </body>
 </html>

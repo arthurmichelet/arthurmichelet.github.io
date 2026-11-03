@@ -14,7 +14,7 @@
   --ink: #1f1f1f;
   --paper: #fff;
   --raised: #fff;
-  --page: #fff;                   /* page (NotesLab's warm grey would be #eeece7) */
+  --page: #FFFFFF;                   /* page (NotesLab's warm grey would be #eeece7) */
   --mint: #ff4f1478;                /* hover / highlight tint C0F3E2 ff4f1465*/
   --deep: #085041;                /* active menu item */
   --neon: #00FFA6;                /* 00FFA6 */
@@ -565,4 +565,93 @@ body.site:not(.home):has(main.viewer-page) .site-header:not(:has(a.current[href=
   body.site:not(.home):has(main.viewer-page) .site-header.wide:not(:has(a.current[href="info"])) { padding-top: 20px; }
   body.site:not(.home):has(main.viewer-page) .site-header:not(:has(a.current[href="info"])) .site-name { top: 92px; }
   body:has(main.viewer-page) .site-header:not(:has(a.current[href="info"])) .nav-row { margin-bottom: 64px; }
+}
+
+/* ── liquid glass menu: frosted blur everywhere; assets/glass.js adds real edge refraction in Chromium browsers ── */
+body.site .site-header .nav-row {
+  background: linear-gradient(135deg, rgba(255,255,255,.55) 0%, rgba(255,255,255,.22) 45%, rgba(255,255,255,.38) 100%);
+  -webkit-backdrop-filter: blur(7px) saturate(2) brightness(1.06);
+  backdrop-filter: blur(7px) saturate(2) brightness(1.06);
+  border: 1px solid rgba(255,255,255,.65);
+  border-radius: 20px;
+  box-shadow:
+    0 14px 38px rgba(20,20,20,.16),
+    0 2px 6px rgba(20,20,20,.12),
+    inset 0 2px 0 rgba(255,255,255,1),
+    inset 0 -2px 0 rgba(255,255,255,.55),
+    inset 2px 0 2px rgba(255,255,255,.7),
+    inset -2px 0 2px rgba(255,255,255,.5),
+    inset 0 -8px 14px -6px rgba(20,20,20,.07),
+    inset 0 8px 14px -8px rgba(255,255,255,.55);
+  overflow: hidden;
+}
+body.site .site-header .nav-row::before {         /* soft specular sheen across the top */
+  content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+  background: linear-gradient(180deg, rgba(255,255,255,.55) 0%, rgba(255,255,255,0) 48%);
+  opacity: .55;
+}
+.site-header nav a { border-radius: 12px; position: relative; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) body.site .site-header .nav-row {
+    background: linear-gradient(135deg, rgba(255,255,255,.16) 0%, rgba(255,255,255,.05) 45%, rgba(255,255,255,.10) 100%);
+    border-color: rgba(255,255,255,.22);
+    box-shadow: 0 10px 30px rgba(0,0,0,.45), inset 0 1.5px 0 rgba(255,255,255,.35), inset 0 -1.5px 0 rgba(255,255,255,.08);
+  }
+}
+:root[data-theme="dark"] body.site .site-header .nav-row {
+  background: linear-gradient(135deg, rgba(255,255,255,.16) 0%, rgba(255,255,255,.05) 45%, rgba(255,255,255,.10) 100%);
+  border-color: rgba(255,255,255,.22);
+  box-shadow: 0 10px 30px rgba(0,0,0,.45), inset 0 1.5px 0 rgba(255,255,255,.35), inset 0 -1.5px 0 rgba(255,255,255,.08);
+}
+
+/* the frosted version (browsers without the refraction: Safari, Firefox): more gloss and tint to make up for the missing lens effect.
+   (The blur stays moderate: very large radii on a box this small make some browsers drop the blur altogether.) */
+html:not(.lg-refract) body.site .site-header .nav-row {
+  -webkit-backdrop-filter: blur(4px) saturate(2.8) brightness(1.03) contrast(1.15);
+  backdrop-filter: blur(6px) saturate(2.8) brightness(1.1) contrast(1.18);
+  background:
+    radial-gradient(130% 170% at 12% -10%, rgba(255,255,255,.3) 0%, rgba(255,255,255,0) 58%),
+    linear-gradient(135deg, rgba(255,255,255,.1) 0%, rgba(255,255,255,0) 50%, rgba(255,255,255,.08) 100%);
+  box-shadow:
+    0 8px 22px rgba(20,20,20,.09),
+    0 1px 4px rgba(20,20,20,.10),
+    inset 0 3px 0 rgba(255,255,255,1),                    /* bright top rim */
+    inset 0 -3px 0 rgba(255,255,255,.7),                  /* bright bottom rim */
+    inset 3px 0 3px rgba(255,255,255,.8),
+    inset -3px 0 3px rgba(255,255,255,.6),
+    inset 1.5px 1.5px 0 rgba(110,190,255,.5),             /* faint colour fringes, like light splitting in thick glass */
+    inset -1.5px -1.5px 0 rgba(255,140,90,.5),
+    inset 0 0 14px rgba(255,255,255,.14),
+    inset 0 -12px 18px -8px rgba(20,20,20,.12);           /* depth: the glass thickens towards the bottom */
+}
+html:not(.lg-refract) body.site .site-header .nav-row::before {   /* light catching the glass: a diagonal streak and a top highlight */
+  background:
+    linear-gradient(112deg, rgba(255,255,255,0) 26%, rgba(255,255,255,.5) 38%, rgba(255,255,255,0) 50%),
+    linear-gradient(112deg, rgba(255,255,255,0) 68%, rgba(255,255,255,.3) 74%, rgba(255,255,255,0) 80%),
+    radial-gradient(90% 70% at 50% 0%, rgba(255,255,255,.35) 0%, rgba(255,255,255,0) 70%);
+  opacity: .85;
+}
+html:not(.lg-refract) body.site .site-header .nav-row::after {    /* a caustic glow along the bottom edge */
+  content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+  background: radial-gradient(70% 60% at 50% 125%, rgba(255,255,255,.3) 0%, rgba(255,255,255,0) 70%);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) html:not(.lg-refract) body.site .site-header .nav-row::before { opacity: .22; }
+  :root:not([data-theme="light"]) html:not(.lg-refract) body.site .site-header .nav-row::after { opacity: .2; }
+}
+:root[data-theme="dark"] body.site .site-header .nav-row::before { opacity: .22; }
+:root[data-theme="dark"] body.site .site-header .nav-row::after { opacity: .2; }
+
+/* ── optional real refraction (Chromium only; script adds .lg-refract) ── */
+html.lg-refract body.site .site-header .nav-row {
+  -webkit-backdrop-filter: blur(1.5px) url(#lgf) saturate(2) brightness(1.06);
+  backdrop-filter: blur(1.5px) url(#lgf) saturate(2) brightness(1.06);
+  background: linear-gradient(135deg, rgba(255,255,255,.26) 0%, rgba(255,255,255,.04) 45%, rgba(255,255,255,.18) 100%);
+}
+
+@media (prefers-reduced-transparency: reduce) {      /* a solid box for people who ask their system for less transparency */
+  html body.site .site-header .nav-row, html.lg-refract body.site .site-header .nav-row {
+    background: var(--paper);
+    -webkit-backdrop-filter: none; backdrop-filter: none;
+  }
 }
