@@ -1,0 +1,46 @@
+/* ── lab variant: the research-interest slabs as glass ─────────────────────────────
+   Loaded after theme-lab.css (content.THEME = "lab-variant"); everything else is the lab look.
+   build.py draws each slab as a frosted layer (.slab-glass, cut to the slab's silhouette) behind a translucent
+   drawing: a tinted top face, a side band (the side minus the top face), a white rim and soft highlights.
+   The tints come from the brick's colours (grey at rest, its own colour on hover). */
+.slab-glass {
+  position: absolute; left: 50%; top: 0; width: 400px; height: 230px; margin-left: -160px;
+  transform: scale(.8); transform-origin: 0 0; pointer-events: none;
+  -webkit-backdrop-filter: blur(5px) saturate(1.8) brightness(1.04);
+  backdrop-filter: blur(5px) saturate(1.8) brightness(1.04);
+}
+.brick-slab { filter: drop-shadow(0 12px 14px rgba(20, 20, 20, .10)) drop-shadow(0 2px 3px rgba(20, 20, 20, .10)); }
+.brick-slab .outline { stroke: color-mix(in srgb, var(--ink) 70%, transparent); stroke-width: 3; }   /* only its outer half shows */
+.brick-slab .side { fill: transparent; }                                                           /* keeps the hover area, paints nothing */
+.brick-slab .g-band .tint { fill: var(--cur-s); opacity: .82; transition: fill 120ms; }
+.brick-slab .top { fill: color-mix(in srgb, var(--cur-t) 74%, transparent); stroke: rgba(255, 255, 255, .55); stroke-width: 1.4; }
+.brick-slab .bevel { stroke: rgba(255, 255, 255, .3); stroke-width: 1.2; }
+.brick-slab .g-top, .brick-slab .g-spec, .brick-slab .g-band { pointer-events: none; }
+.brick-slab .g-top { opacity: .3; }                       /* the white sheen across the top face */
+.brick-slab .g-spec { opacity: .25; }                     /* the white highlight at its upper left */
+.brick-slab .g-band rect:last-child { opacity: .45; }     /* the white-to-dark gloss on the side band */
+.brick-slab text { font-weight: 700; paint-order: stroke; stroke: color-mix(in srgb, var(--paper) 40%, transparent); stroke-width: 2.5px; }
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .brick-slab .top { stroke: rgba(255, 255, 255, .3); }
+  :root:not([data-theme="light"]) .brick-slab { filter: drop-shadow(0 12px 14px rgba(0, 0, 0, .35)); }
+}
+:root[data-theme="dark"] .brick-slab .top { stroke: rgba(255, 255, 255, .3); }
+:root[data-theme="dark"] .brick-slab { filter: drop-shadow(0 12px 14px rgba(0, 0, 0, .35)); }
+
+@media (max-width: 860px) { .slab-glass { margin-left: -140px; transform: scale(.7); } }
+
+/* no transparency wanted: solid slabs */
+@media (prefers-reduced-transparency: reduce) {
+  .slab-glass { display: none; }
+  .brick-slab .g-band .tint { opacity: 1; }
+  .brick-slab .top { fill: var(--cur-t); }
+}
+
+/* ── rounded boxes, like the menu: 20px for the big ones, 12px for what sits inside them ── */
+.site-header .start { border-radius: 14px; }
+.pill { border-radius: 12px; }
+.card { border-radius: 20px; overflow: hidden; }
+.card-icon { border-bottom-left-radius: 14px; }
+.brick-box { border-radius: 20px; }
+.brick-box li { border-radius: 12px; }

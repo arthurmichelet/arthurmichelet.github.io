@@ -5,6 +5,12 @@ After changing anything, run:  python3 build.py
 
 NAME = "Arthur Michelet"
 
+# The line of fields under the name on the start page (the "lab" looks only).
+TAGLINE = "economic history · digital humanities · media studies"
+
+# The short welcome under the name on the start page (the "lab" looks only).
+WELCOME = "Hi! Welcome to my website. You can find info about what I do, as well as pipelines and visualisations I'm working on. Go check it out and don't hesitate to get in touch!"
+
 # Look of the site: "lab" (theme-lab.css: ruled, NotesLab / Forensic Architecture inspired, Satoshi + Gambetta),
 # "retro-variant" (theme-retro-variant.css: Erode name, titles and introduction, Satoshi for the rest),
 # "retro" (theme-retro.css: monospaced headings), all on top of style.css, or "classic" (style.css only).
@@ -42,7 +48,7 @@ LINKEDIN = "https://www.linkedin.com/in/arthur-michelet-aa4326248/"
 ORCID = "0009-0006-4593-6402"
 
 # "grants and awards" section on the info page (shown in this order).
-# type: shown in the pill ("grant", "award", ...).
+# type: "grant", "award", ... (not displayed; add a "url" to an entry to show a link pill with this word).
 GRANTS_AND_AWARDS = [
     {
         "type": "award",
@@ -92,16 +98,8 @@ INTERESTS = [
 # Every field except "title" and "type" is optional. type: shown in the pill.
 # url: the DOI / link, printed at the end of the reference; None = no link (and a coloured pill).
 
-# Section "articles and conference papers"
+# Section "articles, chapters, and conference papers"
 PUBLICATIONS = [
-    {
-        "type": "conference paper",
-        "year": 2026,
-        "authors": "Ruppen Coutaz, Rapha\u00eblle, Martin Grandjean, Arthur Michelet, and Marten D\u00fcring (eds)",
-        "title": "Radio and Newspapers: What Intersections for Media History?",
-        "venue": "2026",   # TODO: add the volume / proceedings if there is one
-        "url": "https://doi.org/10.5281/zenodo.20813962",
-    },
     {
         "type": "conference paper",
         "year": 2026,
@@ -125,6 +123,18 @@ PUBLICATIONS = [
         "title": "The Transmedia Publicity of Swiss Banks: Public Relations Strategies and Mass Media Coverage (1960\u20131977)",
         "venue": "In *Transmedia History: Circulations, Reconfigurations and New Methodologies*, 67\u201371. 2025",
         "url": "https://doi.org/10.5281/zenodo.15046947",
+    },
+]
+
+# Section "edited volumes" (the title is shown in italics, like a book)
+EDITED_VOLUMES = [
+    {
+        "type": "edited volume",
+        "year": 2026,
+        "authors": "Ruppen Coutaz, Rapha\u00eblle, Martin Grandjean, Arthur Michelet, and Marten D\u00fcring (eds)",
+        "title": "Radio and Newspapers: What Intersections for Media History?",
+        "venue": "2026",   # TODO: add the publisher if there is one
+        "url": "https://doi.org/10.5281/zenodo.20813962",
     },
 ]
 

@@ -88,7 +88,7 @@ body.site {
       linear-gradient(var(--line), var(--line)) left 10px top 0 / 1px 100% no-repeat,
       linear-gradient(var(--line), var(--line)) right 0 top 0 / 1px 100% no-repeat,
       linear-gradient(var(--line), var(--line)) right 10px top 0 / 1px 100% no-repeat;
-    opacity: .4;
+    opacity: .55;
     pointer-events: none;
   }
 }
@@ -184,7 +184,7 @@ body.site {
   background: var(--accent);
   border: 1px solid var(--ink);
   border-radius: 0;
-  transition: color .15s, background-color .15s;
+  transition: color .15s, background-color .15s, transform 120ms ease-in-out, box-shadow 120ms ease-in-out;   /* the pop-out must animate too, or it jumps while the colours fade */
 }
 .site-header .start:hover { color: var(--paper); background: var(--ink); border-color: var(--ink); }
 .site-header:has(.start) .nav-row { display: contents; }     /* home: the switch top right, the start button under the name */
@@ -573,7 +573,7 @@ body.site .site-header .nav-row {
   -webkit-backdrop-filter: blur(7px) saturate(2) brightness(1.06);
   backdrop-filter: blur(7px) saturate(2) brightness(1.06);
   border: 1px solid rgba(255,255,255,.65);
-  border-radius: 20px;
+  border-radius: 0;                       /* square; the rounded menu was 20px (and 12px on the links) -- keep assets/glass.js's R in step */
   box-shadow:
     0 14px 38px rgba(20,20,20,.16),
     0 2px 6px rgba(20,20,20,.12),
@@ -590,28 +590,32 @@ body.site .site-header .nav-row::before {         /* soft specular sheen across 
   background: linear-gradient(180deg, rgba(255,255,255,.55) 0%, rgba(255,255,255,0) 48%);
   opacity: .55;
 }
-.site-header nav a { border-radius: 12px; position: relative; }
+.site-header nav a { border-radius: 0; position: relative; }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) body.site .site-header .nav-row {
     background: linear-gradient(135deg, rgba(255,255,255,.16) 0%, rgba(255,255,255,.05) 45%, rgba(255,255,255,.10) 100%);
     border-color: rgba(255,255,255,.22);
-    box-shadow: 0 10px 30px rgba(0,0,0,.45), inset 0 1.5px 0 rgba(255,255,255,.35), inset 0 -1.5px 0 rgba(255,255,255,.08);
+    box-shadow: 0 10px 30px rgba(0,0,0,.45),
+      inset 0 2px 0 rgba(255,255,255,.4), inset 0 -2px 0 rgba(255,255,255,.14),      /* rims on all four sides, as in the light version */
+      inset 2px 0 2px rgba(255,255,255,.22), inset -2px 0 2px rgba(255,255,255,.16);
   }
 }
 :root[data-theme="dark"] body.site .site-header .nav-row {
   background: linear-gradient(135deg, rgba(255,255,255,.16) 0%, rgba(255,255,255,.05) 45%, rgba(255,255,255,.10) 100%);
   border-color: rgba(255,255,255,.22);
-  box-shadow: 0 10px 30px rgba(0,0,0,.45), inset 0 1.5px 0 rgba(255,255,255,.35), inset 0 -1.5px 0 rgba(255,255,255,.08);
+  box-shadow: 0 10px 30px rgba(0,0,0,.45),
+      inset 0 2px 0 rgba(255,255,255,.4), inset 0 -2px 0 rgba(255,255,255,.14),      /* rims on all four sides, as in the light version */
+      inset 2px 0 2px rgba(255,255,255,.22), inset -2px 0 2px rgba(255,255,255,.16);
 }
 
 /* the frosted version (browsers without the refraction: Safari, Firefox): more gloss and tint to make up for the missing lens effect.
    (The blur stays moderate: very large radii on a box this small make some browsers drop the blur altogether.) */
 html:not(.lg-refract) body.site .site-header .nav-row {
-  -webkit-backdrop-filter: blur(4px) saturate(2.8) brightness(1.03) contrast(1.15);
-  backdrop-filter: blur(6px) saturate(2.8) brightness(1.1) contrast(1.18);
+  -webkit-backdrop-filter: blur(4px) saturate(2.2) brightness(1) contrast(1.05);
+  backdrop-filter: blur(4px) saturate(2.2) brightness(1) contrast(1.05);
   background:
-    radial-gradient(130% 170% at 12% -10%, rgba(255,255,255,.3) 0%, rgba(255,255,255,0) 58%),
-    linear-gradient(135deg, rgba(255,255,255,.1) 0%, rgba(255,255,255,0) 50%, rgba(255,255,255,.08) 100%);
+    radial-gradient(130% 170% at 12% -10%, rgba(255,255,255,.08) 0%, rgba(255,255,255,0) 58%),
+    linear-gradient(135deg, rgba(255,255,255,.02) 0%, rgba(255,255,255,0) 50%, rgba(255,255,255,.02) 100%);
   box-shadow:
     0 8px 22px rgba(20,20,20,.09),
     0 1px 4px rgba(20,20,20,.10),
@@ -621,23 +625,53 @@ html:not(.lg-refract) body.site .site-header .nav-row {
     inset -3px 0 3px rgba(255,255,255,.6),
     inset 1.5px 1.5px 0 rgba(110,190,255,.5),             /* faint colour fringes, like light splitting in thick glass */
     inset -1.5px -1.5px 0 rgba(255,140,90,.5),
-    inset 0 0 14px rgba(255,255,255,.14),
+    inset 0 0 14px rgba(255,255,255,.05),
     inset 0 -12px 18px -8px rgba(20,20,20,.12);           /* depth: the glass thickens towards the bottom */
 }
 html:not(.lg-refract) body.site .site-header .nav-row::before {   /* light catching the glass: a diagonal streak and a top highlight */
   background:
-    linear-gradient(112deg, rgba(255,255,255,0) 26%, rgba(255,255,255,.5) 38%, rgba(255,255,255,0) 50%),
-    linear-gradient(112deg, rgba(255,255,255,0) 68%, rgba(255,255,255,.3) 74%, rgba(255,255,255,0) 80%),
-    radial-gradient(90% 70% at 50% 0%, rgba(255,255,255,.35) 0%, rgba(255,255,255,0) 70%);
-  opacity: .85;
+    linear-gradient(112deg, rgba(255,255,255,0) 26%, rgba(255,255,255,.3) 38%, rgba(255,255,255,0) 50%),
+    linear-gradient(112deg, rgba(255,255,255,0) 68%, rgba(255,255,255,.18) 74%, rgba(255,255,255,0) 80%),
+    radial-gradient(90% 70% at 50% 0%, rgba(255,255,255,.2) 0%, rgba(255,255,255,0) 70%);
+  opacity: .7;
 }
 html:not(.lg-refract) body.site .site-header .nav-row::after {    /* a caustic glow along the bottom edge */
   content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
-  background: radial-gradient(70% 60% at 50% 125%, rgba(255,255,255,.3) 0%, rgba(255,255,255,0) 70%);
+  background: radial-gradient(70% 60% at 50% 125%, rgba(255,255,255,.14) 0%, rgba(255,255,255,0) 70%);
 }
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) html:not(.lg-refract) body.site .site-header .nav-row::before { opacity: .22; }
-  :root:not([data-theme="light"]) html:not(.lg-refract) body.site .site-header .nav-row::after { opacity: .2; }
+  :root:not([data-theme="light"]):not(.lg-refract) body.site .site-header .nav-row {
+    background: linear-gradient(135deg, rgba(255,255,255,.07) 0%, rgba(255,255,255,.01) 45%, rgba(255,255,255,.05) 100%);
+    border-color: rgba(255,255,255,.3);
+    box-shadow:
+      0 10px 30px rgba(0,0,0,.45),
+      0 1px 4px rgba(0,0,0,.3),
+      inset 0 3px 0 rgba(255,255,255,.4),                   /* the same rims as the light version ... */
+      inset 0 -3px 0 rgba(255,255,255,.16),
+      inset 3px 0 3px rgba(255,255,255,.26),                /* ... on the left and right too */
+      inset -3px 0 3px rgba(255,255,255,.18),
+      inset 1.5px 1.5px 0 rgba(110,190,255,.4),             /* colour fringes */
+      inset -1.5px -1.5px 0 rgba(255,140,90,.4),
+      inset 0 0 14px rgba(255,255,255,.04),
+      inset 0 -12px 18px -8px rgba(0,0,0,.25);
+  }
+  :root:not([data-theme="light"]):not(.lg-refract) body.site .site-header .nav-row::before { opacity: .15; }
+  :root:not([data-theme="light"]):not(.lg-refract) body.site .site-header .nav-row::after { opacity: .12; }
+}
+:root[data-theme="dark"]:not(.lg-refract) body.site .site-header .nav-row {
+  background: linear-gradient(135deg, rgba(255,255,255,.07) 0%, rgba(255,255,255,.01) 45%, rgba(255,255,255,.05) 100%);
+  border-color: rgba(255,255,255,.3);
+  box-shadow:
+    0 10px 30px rgba(0,0,0,.45),
+    0 1px 4px rgba(0,0,0,.3),
+    inset 0 3px 0 rgba(255,255,255,.4),                   /* the same rims as the light version ... */
+    inset 0 -3px 0 rgba(255,255,255,.16),
+    inset 3px 0 3px rgba(255,255,255,.26),                /* ... on the left and right too */
+    inset -3px 0 3px rgba(255,255,255,.18),
+    inset 1.5px 1.5px 0 rgba(110,190,255,.4),             /* colour fringes */
+    inset -1.5px -1.5px 0 rgba(255,140,90,.4),
+    inset 0 0 14px rgba(255,255,255,.04),
+    inset 0 -12px 18px -8px rgba(0,0,0,.25);
 }
 :root[data-theme="dark"] body.site .site-header .nav-row::before { opacity: .22; }
 :root[data-theme="dark"] body.site .site-header .nav-row::after { opacity: .2; }
@@ -647,6 +681,49 @@ html.lg-refract body.site .site-header .nav-row {
   -webkit-backdrop-filter: blur(1.5px) url(#lgf) saturate(2) brightness(1.06);
   backdrop-filter: blur(1.5px) url(#lgf) saturate(2) brightness(1.06);
   background: linear-gradient(135deg, rgba(255,255,255,.26) 0%, rgba(255,255,255,.04) 45%, rgba(255,255,255,.18) 100%);
+}
+
+/* Chrome / Edge: the same edges as the frosted version, with a lighter shadow */
+html.lg-refract body.site .site-header .nav-row {
+  box-shadow:
+    0 6px 18px rgba(20,20,20,.07),                          /* a light shadow */
+    0 1px 3px rgba(20,20,20,.08),
+    inset 0 3px 0 rgba(255,255,255,1),                      /* the same edges as the frosted version: bright rims ... */
+    inset 0 -3px 0 rgba(255,255,255,.7),
+    inset 3px 0 3px rgba(255,255,255,.8),
+    inset -3px 0 3px rgba(255,255,255,.6),
+    inset 1.5px 1.5px 0 rgba(110,190,255,.5),               /* ... and the faint colour fringes */
+    inset -1.5px -1.5px 0 rgba(255,140,90,.5),
+    inset 0 0 14px rgba(255,255,255,.05),
+    inset 0 -12px 18px -8px rgba(20,20,20,.12);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]).lg-refract body.site .site-header .nav-row {
+    box-shadow:
+      0 6px 18px rgba(0,0,0,.28),
+      0 1px 3px rgba(0,0,0,.2),
+      inset 0 3px 0 rgba(255,255,255,.4),
+      inset 0 -3px 0 rgba(255,255,255,.16),
+      inset 3px 0 3px rgba(255,255,255,.26),
+      inset -3px 0 3px rgba(255,255,255,.18),
+      inset 1.5px 1.5px 0 rgba(110,190,255,.4),
+      inset -1.5px -1.5px 0 rgba(255,140,90,.4),
+      inset 0 0 14px rgba(255,255,255,.04),
+      inset 0 -12px 18px -8px rgba(0,0,0,.25);
+  }
+}
+:root[data-theme="dark"].lg-refract body.site .site-header .nav-row {
+  box-shadow:
+    0 6px 18px rgba(0,0,0,.28),
+    0 1px 3px rgba(0,0,0,.2),
+    inset 0 3px 0 rgba(255,255,255,.4),
+    inset 0 -3px 0 rgba(255,255,255,.16),
+    inset 3px 0 3px rgba(255,255,255,.26),
+    inset -3px 0 3px rgba(255,255,255,.18),
+    inset 1.5px 1.5px 0 rgba(110,190,255,.4),
+    inset -1.5px -1.5px 0 rgba(255,140,90,.4),
+    inset 0 0 14px rgba(255,255,255,.04),
+    inset 0 -12px 18px -8px rgba(0,0,0,.25);
 }
 
 @media (prefers-reduced-transparency: reduce) {      /* a solid box for people who ask their system for less transparency */
@@ -659,3 +736,23 @@ html.lg-refract body.site .site-header .nav-row {
 /* home: the menu box is dissolved (display: contents), so its glass layers must go too — otherwise the sheen washes out the name */
 .site-header:has(.start) .nav-row::before,
 .site-header:has(.start) .nav-row::after { display: none !important; }
+
+
+/* ── start page: the fields, in Satoshi, directly under the name ───────────── */
+.site-header .home-tagline {
+  margin: 12px 0 0;
+  font-family: var(--head); font-weight: 500;
+  font-size: 1.05rem; line-height: 1.4; letter-spacing: .01em;
+  color: var(--ink);
+}
+@media (max-width: 520px) { .site-header .home-tagline { font-size: clamp(.8rem, 3.6vw, .95rem); letter-spacing: 0; margin-top: 10px; } }   /* one line on phones */
+.site-header .home-tagline + .home-intro { margin-top: 22px; }
+
+/* ── start page: a short welcome under the name ──────────────
+   (The start button keeps its original solid orange look, defined further up.) */
+.site-header .home-intro {
+  margin: 30px 0 0; max-width: 34em;
+  font-family: var(--body); font-size: 1.2rem; line-height: 1.6;
+  color: var(--ink);
+}
+@media (max-width: 520px) { .site-header .home-intro { font-size: 1.08rem; margin-top: 24px; } }

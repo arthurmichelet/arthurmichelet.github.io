@@ -4,7 +4,7 @@
 Pages written to the site root:
   index.html          name + navigation
   info.html           paragraph, contact, interests      (text from content.py)
-  publications.html   articles and conference papers     (text from content.py)
+  publications.html   articles, chapters, and conference papers; edited volumes; published notebooks     (text from content.py)
   explore.html        visualisations + notebooks         (from plots/ and notebooks/)
 
 Also:
@@ -90,7 +90,7 @@ _LAB_FONTS = (
     '<link href="https://api.fontshare.com/v2/css?f[]=satoshi@300,400,500,700&display=swap" rel="stylesheet">'
     '<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">'
 )
-FONTS = {"retro-variant": _FONTSHARE_FONTS, "lab": _LAB_FONTS}.get(getattr(content, "THEME", ""), _GOOGLE_FONTS)
+FONTS = {"retro-variant": _FONTSHARE_FONTS, "lab": _LAB_FONTS, "lab-variant": _LAB_FONTS}.get(getattr(content, "THEME", ""), _GOOGLE_FONTS)
 
 # Applied on top of nbconvert's JupyterLab theme (the site header comes from style.css).
 NOTEBOOK_CSS = """
@@ -135,7 +135,10 @@ THEME_SCRIPT = (
 )
 
 
-HOME_BUTTON_THEMES = {"lab"}   # themes whose menu box starts with the monogram button
+# "lab-variant" = the lab look plus glass slabs in the research interests (theme-lab-variant.css is loaded after theme-lab.css)
+LAB_THEMES = {"lab", "lab-variant"}
+GLASS_SLAB_THEMES = {"lab-variant"}
+HOME_BUTTON_THEMES = LAB_THEMES   # themes whose menu box starts with the monogram button
 
 
 def header(root="", current=None, wide=False, home=False):
@@ -150,6 +153,12 @@ def header(root="", current=None, wide=False, home=False):
             links.append(f'<a href="{root}{href}"{cls}>{label}</a>')
         nav = f'<nav>{"".join(links)}</nav>'
     wide_cls = " wide" if wide else ""
+    intro = ""
+    if home and getattr(content, "THEME", "classic") in LAB_THEMES:
+        if getattr(content, "TAGLINE", ""):
+            intro += f'<p class="home-tagline">{html.escape(content.TAGLINE)}</p>'   # the fields, under the name (start page)
+        if getattr(content, "WELCOME", ""):
+            intro += f'<p class="home-intro">{html.escape(content.WELCOME)}</p>'   # the welcome under the name (start page)
     if getattr(content, "THEME", "classic") != "classic":
         # menu on the left, light/dark switch on the right. data-nosnippet: Google must not use these
         # button labels ("start", "dark", "light") as the text under the site name in its results.
@@ -162,7 +171,7 @@ def header(root="", current=None, wide=False, home=False):
     return (
         f'<header class="site-header{wide_cls}">'
         f'<a class="site-name" href="{root}index.html">{html.escape(content.NAME)}</a>'
-        f"{nav}"
+        f"{intro}{nav}"
         f"</header>"
     )
 
@@ -173,8 +182,10 @@ def theme_link(root):
     if theme == "classic":
         return ""
     # the retro look follows the visitor's light/dark preference, unless they chose with the switch
-    return ('<meta name="color-scheme" content="light dark">' + THEME_SCRIPT +
-            f'<link rel="stylesheet" href="{root}theme-{theme}.css">')
+    links = f'<link rel="stylesheet" href="{root}theme-{theme}.css">'
+    if theme == "lab-variant":   # the variant only holds what differs: it builds on the lab stylesheet
+        links = f'<link rel="stylesheet" href="{root}theme-lab.css">' + links
+    return '<meta name="color-scheme" content="light dark">' + THEME_SCRIPT + links
 
 
 def bg_preload(root):
@@ -214,7 +225,7 @@ FAVICON = (
     '<link rel="apple-touch-icon" href="/apple-touch-icon.png">'
 )
 
-FOOTER_THEMES = {"lab"}   # themes with a copyright line at the bottom of every page
+FOOTER_THEMES = LAB_THEMES   # themes with a copyright line at the bottom of every page
 COPYRIGHT_YEAR = 2026
 
 
@@ -225,8 +236,8 @@ def footer():
 
 
 def glass_script(root):
-    """The liquid-glass menu's refraction script (assets/glass.js; only the "lab" look uses it)."""
-    return f'<script src="{root}assets/glass.js" defer></script>\n' if getattr(content, "THEME", "") == "lab" else ""
+    """The liquid-glass menu's refraction script (assets/glass.js; only the "lab" looks use it)."""
+    return f'<script src="{root}assets/glass.js" defer></script>\n' if getattr(content, "THEME", "") in LAB_THEMES else ""
 
 
 def page(title, body, current=None, root="", body_class="site", main_class=""):
@@ -434,13 +445,15 @@ def convert_notebooks():
     if cards:   # headings (and for some looks the text) in the theme's own fonts
         theme = getattr(content, "THEME", "")
         face = {"retro-variant": "'Erode', Georgia, serif",
-                "lab": "'Satoshi', system-ui, sans-serif"}.get(theme, "'IBM Plex Mono', ui-monospace, Menlo, monospace")
+                "lab": "'Satoshi', system-ui, sans-serif",
+                "lab-variant": "'Satoshi', system-ui, sans-serif"}.get(theme, "'IBM Plex Mono', ui-monospace, Menlo, monospace")
         head_extra += ("<style>.jp-RenderedHTMLCommon h1, .jp-RenderedHTMLCommon h2, "
                        ".jp-RenderedHTMLCommon h3 { font-family: " + face + "; }</style>")
-        if theme == "lab":   # the notebook page is its own document: selected text is orange there too
+        if theme in LAB_THEMES:   # the notebook page is its own document: selected text is orange there too
             head_extra += "<style>::selection { background: #FF4D14; color: #111111; }</style>"
         body_face = {"retro-variant": "'Satoshi', system-ui, sans-serif",
-                     "lab": "'Playfair Display', Georgia, serif"}.get(theme)
+                     "lab": "'Playfair Display', Georgia, serif",
+                     "lab-variant": "'Playfair Display', Georgia, serif"}.get(theme)
         if body_face:   # notebook text in the look's text font
             head_extra += ("<style>:root { --jp-ui-font-family: " + body_face + "; "
                            "--jp-content-font-family: " + body_face + "; }</style>")
@@ -593,7 +606,7 @@ def _rounded(points, radii):
     return " ".join(d) + " Z", min(xs), max(xs)
 
 
-def slab_svg(label):
+def slab_svg(label, n=0):
     """A rounded diamond (top face) extruded downwards; one colour for the whole side band,
     the first word of the name on its left half and the second on its right half."""
     words = label.upper().split()
@@ -607,12 +620,54 @@ def slab_svg(label):
     rect = f'<rect x="{xmin:.1f}" y="{y_tip}" width="{xmax - xmin:.1f}" height="{t}"/>'
     right_text = (f'<text transform="translate(200 {172}) skewY(-23.35)" x="90" y="{t - 14}">{html.escape(right_word)}</text>'
                   if right_word else "")
+    if getattr(content, "THEME", "") in GLASS_SLAB_THEMES:
+        return glass_slab_svg(label, n, low, top, xmin, xmax, y_tip, t, left_word, right_word, right_text)
     return (
         '<svg class="brick-slab" viewBox="0 0 400 230" aria-hidden="true" focusable="false">'
         f'<g class="outline"><path d="{low}"/>{rect}<path d="{top}"/></g>'          # thick stroke = outer outline
         f'<g class="side shape"><path d="{low}"/>{rect}<path d="{top}"/></g>'        # side colour covers the inner half
         f'<path class="top shape" d="{top}"/>'
         f'<path class="bevel" d="{top}" transform="translate(200 92) scale(.95 .9) translate(-200 -92)"/>'
+        f'<text transform="translate(12 {y_tip}) skewY(23.35)" x="92" y="{t - 14}">{html.escape(left_word)}</text>'
+        f"{right_text}</svg>"
+    )
+
+
+GLASS_DEFS = (   # shared gradients for the glass slabs (referenced by id from every slab)
+    '<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs>'
+    '<linearGradient id="gSide" gradientUnits="userSpaceOnUse" x1="0" y1="92" x2="0" y2="214">'
+    '<stop offset="0" stop-color="#fff" stop-opacity=".45"/><stop offset=".5" stop-color="#fff" stop-opacity=".05"/>'
+    '<stop offset="1" stop-color="#000" stop-opacity=".16"/></linearGradient>'
+    '<linearGradient id="gTop" x1="0" y1="0" x2="1" y2="1">'
+    '<stop offset="0" stop-color="#fff" stop-opacity=".7"/><stop offset=".42" stop-color="#fff" stop-opacity=".08"/>'
+    '<stop offset=".62" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#fff" stop-opacity=".35"/></linearGradient>'
+    '<radialGradient id="gSpec" cx=".3" cy=".18" r=".5"><stop offset="0" stop-color="#fff" stop-opacity=".8"/>'
+    '<stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>'
+    '</defs></svg>'
+)
+
+
+def glass_slab_svg(label, n, low, top, xmin, xmax, y_tip, t, left_word, right_word, right_text):
+    """The slab as glass (theme "lab-variant", styled by theme-lab-variant.css): a frosted layer cut to the slab's
+    silhouette behind a translucent drawing. The side band is the side minus the top face, so nothing shows through
+    the top; the outline is only the outer edge of the silhouette. Colours come from the brick's CSS variables."""
+    rect_d = f"M{xmin:.1f},{y_tip} H{xmax:.1f} V{y_tip + t} H{xmin:.1f} Z"
+    clip = f"path('{low} {rect_d} {top}')"
+    box = 'maskUnits="userSpaceOnUse" x="0" y="0" width="400" height="230"'
+    return (
+        f'<div class="slab-glass" aria-hidden="true" style="clip-path:{clip}"></div>'
+        '<svg class="brick-slab" viewBox="0 0 400 230" aria-hidden="true" focusable="false">'
+        f'<defs><mask id="om{n}" {box}><rect width="400" height="230" fill="#fff"/>'
+        f'<g fill="#000"><path d="{low}"/><path d="{rect_d}"/><path d="{top}"/></g></mask>'
+        f'<mask id="bm{n}" {box}><g fill="#fff"><path d="{low}"/><path d="{rect_d}"/></g><path d="{top}" fill="#000"/></mask></defs>'
+        f'<g class="outline" mask="url(#om{n})"><path d="{low}"/><path d="{rect_d}"/><path d="{top}"/></g>'
+        f'<g class="side shape"><path d="{low}"/><path d="{rect_d}"/><path d="{top}"/></g>'
+        f'<g class="g-band" mask="url(#bm{n})"><rect class="tint" width="400" height="230"/>'
+        '<rect width="400" height="230" fill="url(#gSide)"/></g>'
+        f'<path class="top shape" d="{top}"/>'
+        f'<path class="bevel" d="{top}" transform="translate(200 92) scale(.95 .9) translate(-200 -92)"/>'
+        f'<path class="g-top" d="{top}" fill="url(#gTop)"/>'
+        f'<path class="g-spec" d="{top}" fill="url(#gSpec)" transform="translate(200 92) scale(.9 .8) translate(-200 -92)"/>'
         f'<text transform="translate(12 {y_tip}) skewY(23.35)" x="92" y="{t - 14}">{html.escape(left_word)}</text>'
         f"{right_text}</svg>"
     )
@@ -658,11 +713,12 @@ def interests_html(interests):
             f'<section class="brick brick-{where}" style="z-index:{len(interests) - n};'
             f'--top:{top};--side:{band};--dy:{dy}px;--gap:{gap}px">'
             f'<h3 class="sr-only">{html.escape(name)}</h3>'
-            f"{slab_svg(name)}"
+            f"{slab_svg(name, n)}"
             f'<div class="brick-side">{connector_svg(dy, gap)}<ul class="brick-box">{chips}</ul></div>'
             "</section>"
         )
-    return '<div class="bricks">' + "".join(bricks) + "</div>"
+    defs = GLASS_DEFS if getattr(content, "THEME", "") in GLASS_SLAB_THEMES else ""
+    return defs + '<div class="bricks">' + "".join(bricks) + "</div>"
 
 
 def build_info():
@@ -693,13 +749,13 @@ def build_info():
         date = (g.get("date") or "").replace(" ", " ")  # keep "May 2026" on one line
         meta = html.escape(" · ".join(x for x in (g.get("issuer"), date) if x))
         meta_html = f'<span class="meta">{meta}</span>' if meta else ""
-        label = html.escape(g["type"])   # a "url" turns the pill into a link (e.g. the announcement)
-        award_pill = (f'<a class="pill" href="{html.escape(g["url"])}">{label}</a>' if g.get("url")
-                      else f'<span class="pill">{label}</span>')
+        # no grey tag any more; only an entry with a "url" shows a pill, as a link (e.g. the announcement)
+        award_pill = (f'<span class="pills"><a class="pill" href="{html.escape(g["url"])}">{html.escape(g["type"])}</a></span>'
+                      if g.get("url") else "")
         awards.append(
             f'<li><span class="entry"><span class="entry-title">{html.escape(g["title"])}</span>'
             f"{meta_html}</span>"
-            f'<span class="pills">{award_pill}</span></li>'
+            f'{award_pill}</li>'
         )
     awards_html = (
         "<h2>grants and awards</h2>\n<ul class='items'>\n" + "\n".join(awards) + "\n</ul>\n"
@@ -732,8 +788,8 @@ def chicago_ref(e):
         a = e["authors"].rstrip(".")
         parts.append(fmt(a) + ".")
     t = e["title"]
-    if e["type"] == "notebook":
-        parts.append(f"<em>{html.escape(t)}</em>.")
+    if e["type"] in ("notebook", "edited volume"):   # titles of whole works (software, books) in italics
+        parts.append(f"<em>{html.escape(t)}</em>" + ("" if t.rstrip()[-1] in "?!." else "."))
     else:
         end = "" if t.rstrip()[-1] in "?!." else "."
         parts.append(f"\u201c{html.escape(t)}{end}\u201d")
@@ -752,20 +808,17 @@ def pub_section(heading, entries):
     entries = sorted(entries, key=lambda e: e.get("year") or 0, reverse=True)
     items = []
     for e in entries:
-        label = html.escape(e["type"])
-        pill = (f'<a class="pill" href="{html.escape(e["url"])}">{label}</a>' if e.get("url")
-                else f'<span class="pill">{label}</span>')
-        items.append(
-            f'<li><span class="entry"><span class="ref">{chicago_ref(e)}</span></span>'
-            f'<span class="pills">{pill}</span></li>'
-        )
+        # no type tag any more: the link is already the URL printed at the end of the reference
+        items.append(f'<li><span class="entry"><span class="ref">{chicago_ref(e)}</span></span></li>')
     return f"<h2>{heading}</h2>\n<ul class='items'>\n" + "\n".join(items) + "\n</ul>"
 
 
 def build_publications():
     body = (
         '<h1 class="sr-only">publications</h1>\n'
-        + pub_section("articles and conference papers", content.PUBLICATIONS)
+        + pub_section("articles, chapters, and conference papers", content.PUBLICATIONS)
+        + "\n"
+        + pub_section("edited volumes", content.EDITED_VOLUMES)
         + "\n"
         + pub_section("published notebooks", content.PUBLISHED_NOTEBOOKS)
     )
