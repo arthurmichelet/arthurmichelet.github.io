@@ -87,7 +87,7 @@ _LAB_FONTS = (
     '<link rel="preconnect" href="https://cdn.fontshare.com" crossorigin>'
     '<link rel="preconnect" href="https://fonts.googleapis.com">'
     '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>'
-    '<link href="https://api.fontshare.com/v2/css?f[]=satoshi@300,400,500,700&display=swap" rel="stylesheet">'
+    '<link href="https://api.fontshare.com/v2/css?f[]=satoshi@300,400,401,500,700,701&display=swap" rel="stylesheet">'   # 401/701 = italic (titles in the references)
     '<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">'
 )
 FONTS = {"retro-variant": _FONTSHARE_FONTS, "lab": _LAB_FONTS, "lab-variant": _LAB_FONTS}.get(getattr(content, "THEME", ""), _GOOGLE_FONTS)
