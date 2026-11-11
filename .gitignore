@@ -6,3 +6,12 @@ plots/sba-umap-labelled-1*
 view/sba-umap-labelled-1*
 notebooks/SBA-UMAP.*
 view/SBA-UMAP.*
+
+# companion page: only the ENCRYPTED output (companion-<slug>/) is committed.
+# Never put readable figures or temporary builds in the repo.
+companion-plain-*/
+*.plain.html
+
+# Python bytecode (it also contains the compiled text of content.py)
+__pycache__/
+*.pyc

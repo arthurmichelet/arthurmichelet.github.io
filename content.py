@@ -18,7 +18,7 @@ THEME = "lab"
 
 SITE_URL = "https://arthurmichelet.com"
 SITE_DESCRIPTION = ("Arthur Michelet, PhD candidate in history at the University of Lausanne, "
-                    "researching the media activity of Swiss banks, 1870–2000 (digital humanities).")
+                    "economic history, media studies, digital humanities.")
 
 # ── info page ────────────────────────────────────────────────────────────────
 # In the paragraph below, [words](https://link) makes a link.
@@ -218,3 +218,16 @@ EXPLORE = {
         "hidden": True,   # OLD notebook, replaced by embeddings-to-labelled-maps. Its outputs hold article data: delete the files.
     },
 }
+
+
+# ── companion page (secret, passcode-protected) ───────────────────────────────
+# A page for the thesis manuscript, built like the explore page but encrypted (StatiCrypt), at an unlisted
+# address that is not in the menu, the sitemap or robots.txt. See README ("Companion page").
+#
+# Everything readable about it stays OUTSIDE the repo, because content.py is public on GitHub:
+#   COMPANION_SRC   folder on this Mac with the Plotly .html figures, their tile pictures and
+#                   companion_config.py (heading, introduction, chapters, titles, descriptions, methodology).
+#   COMPANION_SLUG  folder name of the encrypted page: the link and the QR code in the manuscript point to
+#                   <SITE_URL>/<COMPANION_SLUG>/. Do NOT change it once printed.
+COMPANION_SLUG = "dissertation-companion"
+COMPANION_SRC = "/Users/amichele1/Desktop/01_STUDIES/03_PHD/03_WRITINGS/FIGURES_COMPANION"

@@ -115,3 +115,33 @@ somewhere stay white.
 On the info page, `INTERESTS` in `content.py` is a list of `(name, [topics])`: each pair becomes a
 rounded slab with its box of topics, joined by a curved line. They are grey until you hover a slab or its box; then both take the slab's colour (`BRICK_COLOURS` in `build.py`; box offsets: `BRICK_LAYOUT`). On touch screens the colours are always on. On a phone the
 bricks stack one under the other. A plain list of strings still works and gives a simple boxed list.
+
+## Companion page (secret, passcode-protected)
+
+A page for the thesis manuscript, built like *explore* (one section per chapter, one tile per visualisation, a viewer page per figure) but encrypted and at an unlisted address. It is not in the menu, `sitemap.xml` or `robots.txt`, and carries `noindex`.
+
+**How it stays private.** The readable pages are built in a temporary folder outside the repo, encrypted with [StatiCrypt](https://github.com/robinmoisson/staticrypt) (AES, passcode-derived key) and only the encrypted files are written to `companion-<slug>/`. Your source figures live in `COMPANION_SRC` (outside the repo), and so does the wording of the page: heading, introduction, chapters, titles, descriptions and methodology are in `COMPANION_SRC/companion_config.py`, **not** in `content.py`, because `content.py` is public on GitHub. Back that file up yourself: it is not in git. The build refuses to finish if anything readable is left in the output. The passcode is never stored in the repo: it is read from the environment.
+
+**Build / update** (needs Node.js for `npx`):
+
+```bash
+cd path/to/personal-site
+COMPANION_PASSCODE="your passphrase" python3 build.py
+git add -A && git commit -m "Update companion" && git push
+```
+
+Without `COMPANION_PASSCODE` the build skips the companion and leaves the encrypted folder as it is. The first build creates `.staticrypt.json` (a public salt shared by all companion pages, so one unlock opens every page): commit it. Always rebuild with the **same** passcode unless you want to change it.
+
+**Add a figure while you write.**
+1. Export the Plotly `.html` into `COMPANION_SRC`. Then make its tile pictures (light and dark) with `python3 make_companion_previews.py` (one-time setup: see the top of that file). They are saved next to the figure as `<name>-preview.webp` and `<name>-preview-dark.webp`; existing ones are kept, delete one to redo it. Without them the tile has no picture.
+2. Add an entry under its chapter in `COMPANION` in `COMPANION_SRC/companion_config.py`: `file` (name without `.html`), `number`, `title`, `description`, `methodology`. A new chapter is a new dict with `chapter` and `figures`.
+3. Build and push (above). Files in `COMPANION_SRC` that are not in `COMPANION` are listed as "not published".
+
+**Good to know**
+- The folder name `COMPANION_SLUG` is in the link and the QR code in the manuscript: never change it after printing. To rotate the passcode, rebuild with a new one (the old one stops working for the new files; share the new one).
+- Use a long passphrase (5+ random words): anyone can try guesses offline against the public encrypted files.
+- Each Plotly export carries a ~4.8 MB copy of plotly.js; the companion swaps it for the plotly.js CDN `<script>`, so pages stay small but need an internet connection to draw.
+- The prompt has "Remember me" ticked by default (stores a salted hash in the browser's localStorage), so a reader enters the passcode once per device.
+- The QR code should encode only the link, never the passcode.
+- Same copyright rule as the rest of the site: no article text longer than 15 words (the build warns about long text/hover strings in a figure).
+- Not in `plots/` or `notebooks/`: those are public. Never copy companion figures there.

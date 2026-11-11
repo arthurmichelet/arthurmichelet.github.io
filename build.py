@@ -16,10 +16,14 @@ A figure that exists as both x.html and x.png gets ONE row with two pills.
 
 Usage:  python3 build.py
 """
+import base64
 import html
 import json
+import os
 import re
 import shutil
+import subprocess
+import tempfile
 import uuid
 from pathlib import Path
 
@@ -881,6 +885,271 @@ def build_explore(plots, notebooks):
     write("explore.html", page(f"explore \u00b7 {content.NAME}", body, current="explore",
                                main_class="wide bare" if cards else ""))
 
+# ── companion page (secret, encrypted) ───────────────────────────────────────
+# Built like the explore page (tiles, viewer pages), but: the readable pages are written to a temporary
+# folder OUTSIDE the repo, encrypted with StatiCrypt, and only the encrypted files land in
+# <COMPANION_SLUG>/. The page is not in the menu, the sitemap or robots.txt. Needs Node (npx) and the
+# passcode in the environment:   COMPANION_PASSCODE="..." python3 build.py
+COMPANION_TEMPLATE = ROOT / "companion_template.html"   # StatiCrypt's prompt page + <meta robots noindex>
+STATICRYPT_CONFIG = ROOT / ".staticrypt.json"           # holds the (public) salt, shared by all companion pages
+
+
+def slim_plotly(doc):
+    """A Plotly export carries a full copy of plotly.js (~4.8 MB). Swap it for the CDN <script>,
+    like the notebook converter does: the encrypted pages shrink from megabytes to kilobytes."""
+    m = re.search(r"<script[^>]*>\s*/\*\*\s*\*\s*plotly\.js v([\d.]+).*?</script>", doc, re.S)
+    if not m:
+        return doc
+    cdn = f'<script src="https://cdn.plot.ly/plotly-{m.group(1)}.min.js" charset="utf-8"></script>'
+    return doc[:m.start()] + cdn + doc[m.end():]
+
+
+def figure_text_warnings(name, doc):
+    """Warn when a figure's text, hover text or customdata holds more than 15 words in one string
+    (e.g. an article headline or excerpt)."""
+    m = re.search(r"Plotly\.newPlot\(\s*\"[^\"]+\"\s*,\s*(\[.*?\])\s*,\s*\{", doc, re.S)
+    if not m:
+        return
+    try:
+        data = json.loads(m.group(1))
+    except ValueError:
+        return
+
+    def walk(v):
+        if isinstance(v, str):
+            yield v
+        elif isinstance(v, list):
+            for x in v:
+                yield from walk(x)
+    for tr in data:
+        for key in ("text", "hovertext", "customdata"):
+            if any(len(s.split()) > 15 for s in walk(tr.get(key))):
+                print(f"  WARNING companion/{name}: '{key}' holds strings of more than 15 words. "
+                      "Check you may publish them (articles stay the publishers' property).")
+                return
+
+
+def companion_preview(src, stem, variant="preview"):
+    """Tile picture (<stem>-preview.* light, <stem>-preview-dark.* dark), embedded as a data URI
+    (so it is encrypted with the page). Make them with make_companion_previews.py."""
+    for ext, mime in ((".webp", "image/webp"), (".png", "image/png"), (".jpg", "image/jpeg"), (".jpeg", "image/jpeg")):
+        p = src / f"{stem}-{variant}{ext}"
+        if p.exists():
+            return f"data:{mime};base64," + base64.b64encode(p.read_bytes()).decode("ascii")
+    return None
+
+
+# Extra CSS, inlined in the (encrypted) companion pages only, so the public stylesheets stay untouched:
+# the tile label shows the figure number (instead of v.01); in the viewer the text on the right is
+# justified and the figure follows light/dark mode.
+COMPANION_CSS = """<style>
+.site .card-plot .card-title[data-figure]::before { content: attr(data-figure); counter-increment: none; }
+.site .card-plot .card-title:not([data-figure])::before { display: none; }
+.site .viewer-title { grid-column: 1 / -1; margin-bottom: 20px; }
+.site .card-preview img.pv-dark { display: none; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .site .card-preview.has-dark img.pv-light { display: none; }
+  :root:not([data-theme="light"]) .site .card-preview.has-dark img.pv-dark { display: block; }
+}
+:root[data-theme="dark"] .site .card-preview.has-dark img.pv-light { display: none; }
+:root[data-theme="dark"] .site .card-preview.has-dark img.pv-dark { display: block; }
+.viewer-side p { text-align: justify; -webkit-hyphens: auto; hyphens: auto; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .viewer-frame, :root:not([data-theme="light"]) .viewer-frame iframe { background: var(--page); } }
+:root[data-theme="dark"] .viewer-frame, :root[data-theme="dark"] .viewer-frame iframe { background: var(--page); }
+@media (max-width: 520px) { .site .site-header .site-name { max-width: calc(100vw - 40px) !important; font-size: 1.2rem !important; } }
+</style>"""
+
+
+def plain_text(text):
+    """Tile text: [words](url) becomes words, and *italic* / **bold** marks are dropped."""
+    text = re.sub(r"\[([^\]]+)\]\([^)\s]*\)", r"\1", text)
+    return re.sub(r"\*+([^*]+)\*+", r"\1", text)
+
+
+def companion_cards(heading, rows):
+    """Tiles like the explore page. The orange label above each title is the figure number."""
+    if not rows:
+        return f"<h2>{heading}</h2><p class='empty'>nothing here yet.</p>"
+    cards = []
+    for row in rows:
+        href = html.escape(row["href"])
+        fig = f' data-figure="{html.escape(row["number"])}"' if row.get("number") else ""
+        text = f'<p class="card-text">{html.escape(plain_text(row["description"]))}</p>' if row["description"] else ""
+        dark = row.get("preview_dark")
+        preview = (
+            f'<a class="card-preview{" has-dark" if dark else ""}" href="{href}" tabindex="-1" aria-hidden="true">'
+            f'<img class="pv-light" src="{html.escape(row["preview"])}" alt="" loading="lazy">'
+            + (f'<img class="pv-dark" src="{html.escape(dark)}" alt="" loading="lazy">' if dark else "")
+            + "</a>" if row["preview"] else ""
+        )
+        cards.append(
+            '<article class="card card-plot">'
+            f'<span class="card-icon">{ICON_PLOT}</span>'
+            f'<h3 class="card-title"{fig}><a href="{href}">{html.escape(row["title"])}</a></h3>'
+            f"{text}{preview}"
+            f'<div class="card-links"><a class="pill" href="{href}">check the interactive plot</a></div>'
+            "</article>"
+        )
+    return f"<h2>{heading}</h2>\n<div class='cards'>\n" + "\n".join(cards) + "\n</div>"
+
+
+def companion_page(title, body, main_class):
+    """A page in the site style, without the public menu (the name leads back to the companion index)."""
+    full = title if title == content.COMPANION_HEADING else f"{title} · {content.COMPANION_HEADING}"
+    doc = page(full, body, current="companion", root="../", main_class=main_class)
+    doc = re.sub(r'<a class="home-btn".*?</a>', "", doc, flags=re.S)
+    doc = re.sub(r"<nav>.*?</nav>", "", doc, flags=re.S)
+    doc = doc.replace('<a class="site-name" href="../index.html">', '<a class="site-name" href="./">')
+    # the manuscript's title takes the place of the author's name at the top of every companion page
+    doc = re.sub(r'(<a class="site-name" href="\./">).*?(</a>)',
+                 lambda m: m.group(1) + html.escape(content.COMPANION_HEADING) + m.group(2), doc, count=1)
+    return doc.replace("</head>", '<meta name="robots" content="noindex, nofollow">\n' + COMPANION_CSS + "\n</head>", 1)
+
+
+COMPANION_THEME_JS = r"""<script>
+(function () {
+  // Follows the page's light/dark switch (the srcdoc frame shares the page's origin): re-colours the Plotly figure.
+  var gd = document.querySelector(".plotly-graph-div"), P = window.parent, root = P.document.documentElement;
+  var LIGHT = {bg: "#FFFFFF", text: "#333333", grid: "#e8e8e8"};
+  var DARK = {bg: "#04171a", text: "#d9f7ec", grid: "rgba(192,243,226,.16)"};
+  function dark() {
+    var t = root.getAttribute("data-theme");
+    return t ? t === "dark" : P.matchMedia("(prefers-color-scheme: dark)").matches;
+  }
+  function apply() {
+    if (!gd || !gd._fullLayout || !window.Plotly) { setTimeout(apply, 60); return; }
+    var c = dark() ? DARK : LIGHT, u = {paper_bgcolor: c.bg, plot_bgcolor: c.bg, "font.color": c.text, "legend.font.color": c.text};
+    Object.keys(gd._fullLayout).forEach(function (k) {
+      if (/^[xy]axis\d*$/.test(k)) { u[k + ".gridcolor"] = c.grid; u[k + ".zerolinecolor"] = c.grid; u[k + ".linecolor"] = c.grid; }
+    });
+    (gd.layout.annotations || []).forEach(function (a, i) { u["annotations[" + i + "].font.color"] = c.text; });
+    document.documentElement.style.background = document.body.style.background = c.bg;
+    Plotly.relayout(gd, u);
+  }
+  apply();
+  new MutationObserver(apply).observe(root, {attributes: true, attributeFilter: ["data-theme"]});
+  P.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", apply);
+})();
+</script>"""
+
+
+def companion_viewer(fig, doc, slug_):
+    """Viewer page: the figure in a frame (srcdoc: no separate readable file), text on the side."""
+    title = html.escape(fig.get("title") or pretty(fig["file"]))
+    sections = ""
+    if fig.get("description"):
+        sections += f"<h2>description</h2>\n{para_html(fig.get('about') or fig['description'])}\n"
+    if fig.get("methodology"):
+        sections += f"<h2>methodology</h2>\n{para_html(fig['methodology'])}\n"
+    doc = doc.replace("</body>", COMPANION_THEME_JS + "\n</body>", 1)   # the figure follows light/dark mode
+    size = ""
+    m = re.search(r'style="height:\s*(\d+)px;\s*width:\s*(\d+)px;?"', doc)
+    if m:
+        size = f' data-h="{m.group(1)}" data-w="{m.group(2)}"'
+    heading = (html.escape(fig["number"]) + ": " if fig.get("number") else "") + title
+    body = (
+        '<div class="viewer">\n'
+        f'<h1 class="viewer-title">{heading}</h1>\n'
+        f'<div class="viewer-frame"{size}><iframe srcdoc="{html.escape(doc)}" title="{title}"></iframe></div>\n'
+        '<aside class="viewer-side">\n'
+        f"{sections}"
+        '<p class="viewer-links"><a class="pill" href="./">back to the companion</a></p>\n'
+        f'<p class="viewer-licence">&copy; {html.escape(content.NAME)} &middot; Private preview of a figure from the thesis manuscript: '
+        "please do not circulate.</p>\n"
+        "</aside>\n</div>\n"
+        "<script>(function(){document.querySelectorAll('.viewer-frame[data-w]').forEach(function(f){"
+        "var w=+f.dataset.w,h=+f.dataset.h,i=f.querySelector('iframe');i.style.width=w+'px';i.style.height=h+'px';"
+        "function fit(){var k=Math.min(1,f.clientWidth/w);i.style.transform='scale('+k+')';f.style.height=(h*k)+'px';}"
+        "fit();addEventListener('resize',fit);if(window.ResizeObserver)new ResizeObserver(fit).observe(f);});})();</script>"
+    )
+    return companion_page(fig.get("title") or pretty(fig["file"]), body, "wide viewer-page")
+
+
+def load_companion_config(src):
+    """The heading, introduction and chapters (titles, descriptions, methodology) are read from
+    <COMPANION_SRC>/companion_config.py. That folder is outside the repo, so this wording is never
+    published on GitHub (content.py is public). Falls back to content.py when that file is missing."""
+    cfg = src / "companion_config.py"
+    if cfg.exists():
+        ns = {}
+        exec(compile(cfg.read_text(encoding="utf-8"), str(cfg), "exec"), ns)   # exec: no __pycache__ is written
+        for key in ("COMPANION_HEADING", "COMPANION_INTRO", "COMPANION"):
+            if key in ns:
+                setattr(content, key, ns[key])
+    if not hasattr(content, "COMPANION_HEADING"):
+        content.COMPANION_HEADING = "Companion"
+    return bool(getattr(content, "COMPANION", None))
+
+
+def build_companion():
+    if not hasattr(content, "COMPANION_SLUG"):
+        return
+    pw = os.environ.get("COMPANION_PASSCODE")
+    if not pw:
+        print("Companion page: skipped (set COMPANION_PASSCODE to build and encrypt it).")
+        return
+    if not shutil.which("npx"):
+        raise SystemExit("Companion page: Node.js (npx) is needed for the encryption step. Install it from nodejs.org.")
+    src = Path(content.COMPANION_SRC).expanduser()
+    if not src.is_dir():
+        raise SystemExit(f"Companion page: COMPANION_SRC not found: {src}")
+    if not load_companion_config(src):
+        raise SystemExit(f"Companion page: no chapters found. Put companion_config.py in {src} (see README).")
+    out = ROOT / content.COMPANION_SLUG
+
+    listed, sections, files = set(), [], []
+    with tempfile.TemporaryDirectory(prefix="companion-plain-") as tmp:
+        tmp = Path(tmp)
+        for chapter in content.COMPANION:
+            rows = []
+            for fig in chapter["figures"]:
+                f = src / f"{fig['file']}.html"
+                listed.add(f.name)
+                if not f.exists():
+                    print(f"  WARNING companion: {f.name} not found in COMPANION_SRC, skipped.")
+                    continue
+                doc = slim_plotly(f.read_text(encoding="utf-8"))
+                figure_text_warnings(f.name, doc)
+                name = slug(fig["file"])
+                (tmp / f"{name}.html").write_text(companion_viewer(fig, doc, name), encoding="utf-8")
+                files.append(f"{name}.html")
+                rows.append({"title": fig.get("title") or pretty(fig["file"]), "number": fig.get("number", ""), "href": name,
+                             "description": fig.get("description", ""), "preview": companion_preview(src, fig["file"]),
+                             "preview_dark": companion_preview(src, fig["file"], "preview-dark")})
+            sections.append(companion_cards(html.escape(chapter["chapter"]), rows))
+        for f in sorted(src.glob("*.html")):
+            if f.name not in listed:
+                print(f"  NOTE companion: {f.name} is in COMPANION_SRC but not in COMPANION (content.py): not published.")
+        intro = f'<p class="companion-intro">{rich(content.COMPANION_INTRO)}</p>\n' if getattr(content, "COMPANION_INTRO", "") else ""
+        body = f'<h1 class="sr-only">{html.escape(content.COMPANION_HEADING)}</h1>\n{intro}' + "\n".join(sections)
+        (tmp / "index.html").write_text(companion_page(content.COMPANION_HEADING, body, "wide bare"), encoding="utf-8")
+        files.append("index.html")
+
+        if out.exists():
+            shutil.rmtree(out)   # drops pages of figures you removed
+        env = dict(os.environ, STATICRYPT_PASSWORD=pw)
+        cmd = ["npx", "--yes", "staticrypt@3", *[str(tmp / n) for n in files],
+               "-d", content.COMPANION_SLUG, "--config", STATICRYPT_CONFIG.name, "--template", COMPANION_TEMPLATE.name,
+               "--remember", "30", "--short",
+               "--template-title", content.COMPANION_HEADING,
+               "--template-instructions", "Private preview. Enter the passcode you were given.",
+               "--template-button", "Open", "--template-placeholder", "Passcode",
+               "--template-error", "Wrong passcode.", "--template-remember", "Remember me on this device",
+               "--template-color-primary", "#333333", "--template-color-secondary", "#fafafa"]
+        res = subprocess.run(cmd, cwd=ROOT, env=env, capture_output=True, text=True)
+        if res.returncode != 0:
+            shutil.rmtree(out, ignore_errors=True)
+            raise SystemExit("Companion page: encryption failed.\n" + res.stderr[-1500:])
+
+    # safety net: nothing readable may be left in what will be committed
+    for f in out.glob("*.html"):
+        text = f.read_text(encoding="utf-8")
+        if "plotly" in text.lower() or "viewer-title" in text:
+            shutil.rmtree(out, ignore_errors=True)
+            raise SystemExit(f"Companion page: {f.name} is NOT encrypted. Output removed; nothing was written.")
+    print(f"Companion page: {len(files) - 1} figure page(s) + index, encrypted -> {content.SITE_URL}/{content.COMPANION_SLUG}/")
+
+
 if __name__ == "__main__":
     notebooks = convert_notebooks()
     plots = list_plots()
@@ -897,4 +1166,5 @@ if __name__ == "__main__":
           + "</urlset>\n")
 
     clean_urls()
+    build_companion()
     print(f"Built 4 pages: {len(plots)} visualisation(s), {len(notebooks)} notebook(s).")
