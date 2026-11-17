@@ -6,10 +6,10 @@ After changing anything, run:  python3 build.py
 NAME = "Arthur Michelet"
 
 # The line of fields under the name on the start page (the "lab" looks only).
-TAGLINE = "economic history · digital humanities · media studies"
+TAGLINE = "economic history — digital humanities — media studies"
 
 # The short welcome under the name on the start page (the "lab" looks only).
-WELCOME = "Hi! Welcome to my website. You can find info about what I do, as well as pipelines and visualisations I'm working on. Go check it out and don't hesitate to get in touch!"
+WELCOME = "Hi! Welcome to my website. You can find info about what I do and explore pipelines and visualisations I'm working on. Go check it out and let's talk!"
 
 # Look of the site: "lab" (theme-lab.css: ruled, NotesLab / Forensic Architecture inspired, Satoshi + Gambetta),
 # "retro-variant" (theme-retro-variant.css: Erode name, titles and introduction, Satoshi for the rest),
@@ -24,20 +24,19 @@ SITE_DESCRIPTION = ("Arthur Michelet, PhD candidate in history at the University
 # In the paragraph below, [words](https://link) makes a link.
 INFO = (
     "I am a PhD candidate at the University of Lausanne, Switzerland, working on the relationship "
-    "between media, news, and organised business interests in the twentieth century. I use qualitative archive research "
-    "and apply computational techniques to digitised media sources to study the news coverage "
-    "and public relations of the Swiss Bankers Association (1910\u20131990). My PhD is part of the "
-    "[Impresso \u2013 Media Monitoring of the Past](https://impresso-project.ch/) project, funded by the "
+    "between media, news, and organised business interests in the twentieth century. I combine archive research "
+    "and computational techniques to study the news coverage "
+    "and public relations of the Swiss Bankers Association, the country's banking lobby. My PhD is part of "
+    "[Impresso \u2013 Media Monitoring of the Past](https://impresso-project.ch/), funded by the "
     "Swiss National Science Foundation and the Luxembourg Research Fund. I also teach "
     "at EPFL, Lausanne, and am a [Visiting Research Fellow](https://www.sas.ac.uk/people/arthur-michelet) "
-    "at the Digital Humanities Research Hub (School of Advanced Study), in London UK."
+    "at the Digital Humanities Research Hub (School of Advanced Study, University of London)."
 )
 
 # (label, text, link or None)
 CONTACT = [
     ("email", "arthur.michelet@unil.ch", "mailto:arthur.michelet@unil.ch"),
     ("affiliation", "History Department, Faculty of Arts, University of Lausanne", None),
-    ("office", "Anthropole 5190, 1015 Lausanne, Switzerland", None),
     ("github", "github.com/arthurmichelet", "https://github.com/arthurmichelet"),
 ]
 
@@ -68,23 +67,22 @@ GRANTS_AND_AWARDS = [
 # (A plain list of strings also works: it is shown as a simple boxed list.)
 INTERESTS = [
     ("economic history", [
-        "banks and credit",
-        "offshore finance and euromarkets",
-        "business associations",
-        "multinational banks",
+        "history of capitalism",
+        "business associations, organised interests",
+        "history of banks and credit",
+        "offshore finance, multinational banks, and euromarkets",
     ]),
     ("digital humanities", [
         "computational text analysis",
-        "text embeddings",
+        "embeddings",
         "language models for historical sources",
-        "data visualisation",
         "NLP and machine learning",
     ]),
     ("media studies", [
         "public relations, propaganda, and marketing",
-        "mass media ecosystems",
+        "history of mass media ecosystems",
         "making and structures of news",
-        "economic and financial news",
+        "economic and financial press",
     ]),
 ]
 

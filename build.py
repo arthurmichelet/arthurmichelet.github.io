@@ -91,7 +91,7 @@ _LAB_FONTS = (
     '<link rel="preconnect" href="https://cdn.fontshare.com" crossorigin>'
     '<link rel="preconnect" href="https://fonts.googleapis.com">'
     '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>'
-    '<link href="https://api.fontshare.com/v2/css?f[]=satoshi@300,400,401,500,700,701&display=swap" rel="stylesheet">'   # 401/701 = italic (titles in the references)
+    '<link href="https://api.fontshare.com/v2/css?f[]=satoshi@300,400,401,500,700,701,900&display=swap" rel="stylesheet">'   # 401/701 = italic (titles in the references)
     '<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">'
 )
 FONTS = {"retro-variant": _FONTSHARE_FONTS, "lab": _LAB_FONTS, "lab-variant": _LAB_FONTS}.get(getattr(content, "THEME", ""), _GOOGLE_FONTS)
@@ -771,7 +771,7 @@ def build_info():
     body = (
         '<h1 class="sr-only">info</h1>\n'
         f"<p>{md_links(content.INFO)}</p>\n"
-        f"<h2>get in touch</h2>\n<dl class='contact'>\n{contact}\n</dl>\n"
+        f"<h2>let's talk</h2>\n<dl class='contact'>\n{contact}\n</dl>\n"
         f"{awards_html}"
         f"<h2>research interests</h2>\n{interests}"
     )
