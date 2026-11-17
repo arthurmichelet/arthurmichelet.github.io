@@ -9,7 +9,7 @@ NAME = "Arthur Michelet"
 TAGLINE = "economic history — digital humanities — media studies"
 
 # The short welcome under the name on the start page (the "lab" looks only).
-WELCOME = "Hi! Welcome to my website. You can find info about what I do and explore pipelines and visualisations I'm working on. Go check it out and let's talk!"
+WELCOME = "Hi! Welcome to my website. You can find info about what I do and explore pipelines and visualisations I'm working on. Go check it out and don't hesitate to get in touch!"
 
 # Look of the site: "lab" (theme-lab.css: ruled, NotesLab / Forensic Architecture inspired, Satoshi + Gambetta),
 # "retro-variant" (theme-retro-variant.css: Erode name, titles and introduction, Satoshi for the rest),
